@@ -1,0 +1,6 @@
+.env
+
+server.crt
+server.key
+server.rsa.crt
+server.rsa.key
