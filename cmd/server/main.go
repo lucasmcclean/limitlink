@@ -9,11 +9,10 @@ import (
 	"time"
 
 	"github.com/lucasmcclean/url-shortener/config"
-	"github.com/lucasmcclean/url-shortener/postgres"
+	"github.com/lucasmcclean/url-shortener/logger"
+	"github.com/lucasmcclean/url-shortener/repository/postgres"
 	"github.com/lucasmcclean/url-shortener/server"
 )
-
-// FIX: Setup logging package
 
 func main() {
 	ctx := context.Background()
@@ -22,19 +21,21 @@ func main() {
 	dbCfg := config.GetDB()
 	srvCfg := config.GetServer()
 
+	log := logger.NewStdLogger(logger.DEBUG, os.Stderr)
+
 	repo, err := postgres.New(dbCfg)
 	if err != nil {
-		// log.Printf("error connecting to database: %s", err)
+		log.Error("couldn't connect to database", "error", err)
 		os.Exit(1)
 	}
 
 	server := server.New(ctx, srvCfg, repo)
 	go func() {
-		// log.Printf("listening and serving on: %s", server.Addr)
+		log.Info("listening and serving", "address", server.Addr)
 		// TODO: Get certs for TLS
 		err := server.ListenAndServeTLS("server.crt", "server.key")
 		if err != nil && err != http.ErrServerClosed {
-			// log.Printf("error listening and serving: %s", err)
+			log.Error("failed to listen and serve", "error", err)
 			cancelCtx() // Server has failed so begin shutdown
 		}
 	}()
@@ -54,13 +55,13 @@ func main() {
 
 		err = server.Shutdown(shutdownCtx)
 		if err != nil {
-			// log.Printf("error shutting down HTTP server: %s", err)
+			log.Error("couldn't shutdown server", "error", err)
 			successfulShutdown = false
 		}
 
 		err = repo.Close()
 		if err != nil {
-			// log.Printf("error closing repository: %s", err)
+			log.Error("couldn't close repository", "error", err)
 			successfulShutdown = false
 		}
 	}()

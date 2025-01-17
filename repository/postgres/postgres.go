@@ -8,24 +8,24 @@ import (
 	"github.com/lucasmcclean/url-shortener/config"
 )
 
-type Postgres struct {
-	db *sql.DB
+type DB struct {
+	pool *sql.DB
 }
 
-func New(cfg *config.DB) (*Postgres, error) {
+func New(cfg *config.DB) (*DB, error) {
 	connStr := generateConnStr(cfg)
 
-	db, err := sql.Open("postgres", connStr)
+	pool, err := sql.Open("postgres", connStr)
 	if err != nil {
-		return nil, fmt.Errorf("error opening databse connection: %s", err)
+		return nil, fmt.Errorf("opening databse connection: %s", err)
 	}
 
-	err = db.Ping()
+	err = pool.Ping()
 	if err != nil {
-		return nil, fmt.Errorf("error pinging database: %s", err)
+		return nil, fmt.Errorf("pinging database: %s", err)
 	}
 
-	return &Postgres{db: db}, nil
+	return &DB{pool: pool}, nil
 }
 
 func generateConnStr(cfg *config.DB) string {
@@ -37,7 +37,7 @@ func generateConnStr(cfg *config.DB) string {
 		cfg.Name)
 }
 
-func (p *Postgres) Close() error {
-	err := p.Close()
+func (db *DB) Close() error {
+	err := db.pool.Close()
 	return err
 }
