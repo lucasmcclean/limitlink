@@ -24,19 +24,19 @@ func NewStdLogger(level LogLevel, output io.Writer) *StdLogger {
 
 func (sl *StdLogger) Debug(msg string, fields ...any) {
 	if DEBUG >= sl.level {
-		sl.log.Printf(formatLog(sl.level, "DEBUG", msg, fields))
+		sl.log.Printf(formatLog(sl.level, "DEBUG", msg, fields...))
 	}
 }
 
 func (sl *StdLogger) Info(msg string, fields ...any) {
 	if INFO >= sl.level {
-		sl.log.Printf(formatLog(sl.level, "INFO", msg, fields))
+		sl.log.Printf(formatLog(sl.level, "INFO", msg, fields...))
 	}
 }
 
 func (sl *StdLogger) Warn(msg string, fields ...any) {
 	if WARN >= sl.level {
-		sl.log.Printf(formatLog(sl.level, "WARN", msg, fields))
+		sl.log.Printf(formatLog(sl.level, "WARN", msg, fields...))
 	}
 }
 

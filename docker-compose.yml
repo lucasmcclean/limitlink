@@ -1,0 +1,44 @@
+services:
+  app:
+    container_name: url-shortener
+    build: .
+    environment:
+      SERVER_PORT: ${SERVER_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+    ports:
+      - "3000:${SERVER_PORT}"
+    # Enables functionality with CompileDaemon; see Dockerfile
+    volumes:
+      - ./:/app 
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+  postgres:
+    container_name: postgres-db
+    image: postgres:17.2
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGPASSWORD: ${DB_PASSWORD}
+      PGHOST: ${DB_HOST}
+      PGPORT: ${DB_PORT}
+      PGDATABASE: ${DB_NAME}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    ports:
+      - "5432:${DB_PORT}"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:

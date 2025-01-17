@@ -1,5 +1,7 @@
 .env
 
+serve
+
 server.crt
 server.key
 server.rsa.crt
