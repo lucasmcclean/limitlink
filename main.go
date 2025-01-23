@@ -29,11 +29,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	server := server.New(ctx, srvCfg, repo)
+	server, err := server.New(ctx, srvCfg, repo)
+	if err != nil {
+		log.Error("failed to setup HTTPS server", "error", err)
+		err = repo.Close()
+		if err != nil {
+			log.Error("failed to close repository", "error", err)
+		}
+		os.Exit(1)
+	}
+
 	go func() {
 		log.Info("listening and serving", "address", server.Addr)
-		// TODO: Get certs for TLS
-		err := server.ListenAndServeTLS("server.crt", "server.key")
+		err := server.ListenAndServeTLS(srvCfg.CertPath+"/server.crt", srvCfg.CertPath+"/server.key")
 		if err != nil && err != http.ErrServerClosed {
 			log.Error("failed to listen and serve", "error", err)
 			cancelCtx() // Server has failed so begin shutdown
@@ -55,13 +63,13 @@ func main() {
 
 		err = server.Shutdown(shutdownCtx)
 		if err != nil {
-			log.Error("couldn't shutdown server", "error", err)
+			log.Error("failed to shutdown server", "error", err)
 			successfulShutdown = false
 		}
 
 		err = repo.Close()
 		if err != nil {
-			log.Error("couldn't close repository", "error", err)
+			log.Error("failed to close repository", "error", err)
 			successfulShutdown = false
 		}
 	}()

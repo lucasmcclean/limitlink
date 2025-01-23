@@ -17,4 +17,4 @@ RUN go install github.com/githubnemo/CompileDaemon
 
 RUN go install github.com/a-h/templ/cmd/templ@latest
 
-ENTRYPOINT CompileDaemon -include="*.templ" -exclude="*_templ.go" -build="templ generate && go build -o serve ./cmd/server/main.go" -command="./serve"
+ENTRYPOINT CompileDaemon -include="*.templ" -exclude="*_templ.go" -build="templ generate && go build -o serve main.go" -command="./serve"

@@ -2,7 +2,4 @@
 
 serve
 
-server.crt
-server.key
-server.rsa.crt
-server.rsa.key
+certs/*
