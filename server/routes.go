@@ -1,9 +1,15 @@
 package server
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/a-h/templ"
+	"github.com/lucasmcclean/url-shortener/templates/pages"
+)
 
 func addRoutes(mux *http.ServeMux) {
-	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Root"))
-	}))
+	staticFS := http.FileServer(http.Dir("../static"))
+	mux.Handle("/static/", http.StripPrefix("/static/", staticFS))
+
+	mux.Handle("/", templ.Handler(pages.Index()))
 }
