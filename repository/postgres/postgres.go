@@ -14,7 +14,7 @@ type DB struct {
 
 // WARN: Currently built with ssl set to 'disable'
 func New(cfg *config.DB) (*DB, error) {
-	connStr := generateConnStrNoSSL(cfg)
+	connStr := cfg.GenerateConnStrNoSSL()
 
 	pool, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -27,24 +27,6 @@ func New(cfg *config.DB) (*DB, error) {
 	}
 
 	return &DB{pool: pool}, nil
-}
-
-func generateConnStr(cfg *config.DB) string {
-	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s",
-		cfg.User,
-		cfg.Password,
-		cfg.Host,
-		cfg.Port,
-		cfg.Name)
-}
-
-func generateConnStrNoSSL(cfg *config.DB) string {
-	return fmt.Sprintf("postgresql://%s:%s@%s:%s/%s?sslmode=disable",
-		cfg.User,
-		cfg.Password,
-		cfg.Host,
-		cfg.Port,
-		cfg.Name)
 }
 
 func (db *DB) Close() error {
