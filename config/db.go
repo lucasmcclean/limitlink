@@ -16,17 +16,21 @@ type DB struct {
 	URL      string
 }
 
-// TODO: Take log as argument for handling empty values
-func GetDB(log *logger.Logger) *DB {
+func GetDB(log logger.Logger) *DB {
 	dbCfg := &DB{}
+	var missing []string
 
 	dbCfg.URL = os.Getenv("DB_URL")
 	if dbCfg.URL == "" {
-		dbCfg.User = os.Getenv("DB_USER")
-		dbCfg.Password = os.Getenv("DB_PASSWORD")
-		dbCfg.Host = os.Getenv("DB_HOST")
-		dbCfg.Port = os.Getenv("DB_PORT")
-		dbCfg.Name = os.Getenv("DB_NAME")
+		dbCfg.User, missing = getOrAppendMissing("DB_USER", missing)
+		dbCfg.Password, missing = getOrAppendMissing("DB_PASSWORD", missing)
+		dbCfg.Host, missing = getOrAppendMissing("DB_HOST", missing)
+		dbCfg.Port, missing = getOrAppendMissing("DB_PORT", missing)
+		dbCfg.Name, missing = getOrAppendMissing("DB_NAME", missing)
+	}
+
+	if len(missing) > 0 {
+		log.Fatal("missing DB environment variables; must provide URL or all of these\n", "keys", missing)
 	}
 
 	return dbCfg

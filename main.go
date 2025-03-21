@@ -18,10 +18,10 @@ func main() {
 	ctx := context.Background()
 	ctx, cancelCtx := signal.NotifyContext(ctx, os.Interrupt)
 
-	dbCfg := config.GetDB()
-	srvCfg := config.GetServer()
-
 	log := logger.NewStdLogger(logger.DEBUG, os.Stderr)
+
+	dbCfg := config.GetDB(log)
+	srvCfg := config.GetServer(log)
 
 	repo, err := postgres.New(dbCfg)
 	if err != nil {

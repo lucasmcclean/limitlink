@@ -1,26 +1,28 @@
 package config
 
 import (
-	"os"
-
 	"github.com/lucasmcclean/url-shortener/logger"
 )
 
 type Server struct {
 	Port     string
 	CertPath string
-	IsDev    bool
+	Env      string
 }
 
-// TODO: Take log as argument for handling empty values
-func GetServer(log *logger.Logger) *Server {
+func GetServer(log logger.Logger) *Server {
 	srvCfg := &Server{}
-	srvCfg.Port = ":" + os.Getenv("SERVER_PORT")
-	srvCfg.CertPath = os.Getenv("SERVER_CERT_PATH")
-	if os.Getenv("ENVIRONMENT") == "dev" {
-		srvCfg.IsDev = true
-	} else {
-		srvCfg.IsDev = false
+	var missing []string
+
+	srvCfg.Port, missing = getOrAppendMissing("SERVER_PORT", missing)
+	srvCfg.CertPath, missing = getOrAppendMissing("SERVER_CERT_PATH", missing)
+	srvCfg.Env, missing = getOrAppendMissing("ENVIRONMENT", missing)
+
+	if len(missing) > 0 {
+		log.Fatal("missing server environment variables\n", "keys", missing)
 	}
+
+	srvCfg.Port = ":" + srvCfg.Port
+
 	return srvCfg
 }
