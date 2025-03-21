@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
+
+	"github.com/lucasmcclean/url-shortener/logger"
 )
 
 type DB struct {
@@ -15,7 +17,7 @@ type DB struct {
 }
 
 // TODO: Take log as argument for handling empty values
-func GetDB() *DB {
+func GetDB(log *logger.Logger) *DB {
 	dbCfg := &DB{}
 
 	dbCfg.URL = os.Getenv("DB_URL")

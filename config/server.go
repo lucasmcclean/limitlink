@@ -1,6 +1,10 @@
 package config
 
-import "os"
+import (
+	"os"
+
+	"github.com/lucasmcclean/url-shortener/logger"
+)
 
 type Server struct {
 	Port     string
@@ -9,7 +13,7 @@ type Server struct {
 }
 
 // TODO: Take log as argument for handling empty values
-func GetServer() *Server {
+func GetServer(log *logger.Logger) *Server {
 	srvCfg := &Server{}
 	srvCfg.Port = ":" + os.Getenv("SERVER_PORT")
 	srvCfg.CertPath = os.Getenv("SERVER_CERT_PATH")

@@ -24,25 +24,31 @@ func NewStdLogger(level LogLevel, output io.Writer) *StdLogger {
 
 func (sl *StdLogger) Debug(msg string, fields ...any) {
 	if DEBUG >= sl.level {
-		sl.log.Printf(formatLog(sl.level, "DEBUG", msg, fields...))
+		sl.log.Print(formatLog(sl.level, "DEBUG", msg, fields...))
 	}
 }
 
 func (sl *StdLogger) Info(msg string, fields ...any) {
 	if INFO >= sl.level {
-		sl.log.Printf(formatLog(sl.level, "INFO", msg, fields...))
+		sl.log.Print(formatLog(sl.level, "INFO", msg, fields...))
 	}
 }
 
 func (sl *StdLogger) Warn(msg string, fields ...any) {
 	if WARN >= sl.level {
-		sl.log.Printf(formatLog(sl.level, "WARN", msg, fields...))
+		sl.log.Print(formatLog(sl.level, "WARN", msg, fields...))
 	}
 }
 
 func (sl *StdLogger) Error(msg string, fields ...any) {
 	if ERROR >= sl.level {
-		sl.log.Printf(formatLog(sl.level, "ERROR", msg, fields...))
+		sl.log.Print(formatLog(sl.level, "ERROR", msg, fields...))
+	}
+}
+
+func (sl *StdLogger) Fatal(msg string, fields ...any) {
+	if FATAL >= sl.level {
+		sl.log.Fatal(formatLog(sl.level, "FATAL", msg, fields...))
 	}
 }
 
@@ -67,7 +73,7 @@ func appendDebugInfo(msg *strings.Builder) {
 	} else {
 		file = truncatePathToDepth(file, 2)
 	}
-	msg.WriteString(fmt.Sprintf("(%s:%d) ", file, line))
+	fmt.Fprintf(msg, "(%s:%d) ", file, line)
 }
 
 func truncatePathToDepth(path string, numParents int) string {
@@ -88,11 +94,11 @@ func truncatePathToDepth(path string, numParents int) string {
 
 func appendTimestamp(msg *strings.Builder) {
 	isoTimestamp := time.Now().Format(time.RFC3339)
-	msg.WriteString(fmt.Sprintf("%v ", isoTimestamp))
+	fmt.Fprintf(msg, "%v ", isoTimestamp)
 }
 
 func appendMessage(msg *strings.Builder, callLevel string, s string) {
-	msg.WriteString(fmt.Sprintf("[%s] %s", callLevel, s))
+	fmt.Fprintf(msg, "[%s] %s", callLevel, s)
 }
 
 func appendFields(msg *strings.Builder, fields ...any) {
@@ -110,7 +116,7 @@ func appendFields(msg *strings.Builder, fields ...any) {
 			key = "INVALID_KEY"
 			invalidKey = true
 		}
-		msg.WriteString(fmt.Sprintf("\n  %s: '%v'", key, fields[i+1]))
+		fmt.Fprintf(msg, "\n  %s: '%v'", key, fields[i+1])
 	}
 	if invalidKey {
 		msg.WriteString(" {LOG_ERROR: all keys must be strings}")
