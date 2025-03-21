@@ -106,7 +106,7 @@ func appendFields(msg *strings.Builder, fields ...any) {
 		return
 	}
 	if len(fields)%2 != 0 {
-		msg.WriteString(" {LOG_ERROR: fields are key-value pairs; must be even number}")
+		msg.WriteString("\n{LOG_ERROR: fields must be key-value pairs")
 		return
 	}
 	invalidKey := false
@@ -116,9 +116,9 @@ func appendFields(msg *strings.Builder, fields ...any) {
 			key = "INVALID_KEY"
 			invalidKey = true
 		}
-		fmt.Fprintf(msg, "\n  %s: '%v'", key, fields[i+1])
+		fmt.Fprintf(msg, "\n%s: '%v'", key, fields[i+1])
 	}
 	if invalidKey {
-		msg.WriteString(" {LOG_ERROR: all keys must be strings}")
+		msg.WriteString("\n{LOG_ERROR: all keys must be strings}")
 	}
 }

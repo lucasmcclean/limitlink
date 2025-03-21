@@ -19,7 +19,7 @@ func GetServer(log logger.Logger) *Server {
 	srvCfg.Env, missing = getOrAppendMissing("ENVIRONMENT", missing)
 
 	if len(missing) > 0 {
-		log.Fatal("missing server environment variables\n", "keys", missing)
+		log.Fatal("missing server environment variables\n", "missing_env_vars", missing)
 	}
 
 	srvCfg.Port = ":" + srvCfg.Port
