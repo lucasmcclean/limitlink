@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -10,19 +9,14 @@ import (
 	"github.com/lucasmcclean/url-shortener/repository"
 )
 
-func New(ctx context.Context, srvCfg *config.Server, repo repository.Repository) (*http.Server, error) {
+func New(ctx context.Context, srvCfg *config.Server, repo repository.Repository) *http.Server {
 	mux := http.NewServeMux()
 
-	addRoutes(mux)
+	registerRoutes(mux)
 
 	var handler http.Handler = mux
 
 	// apply middleware
-
-	tlsCfg, err := getTLSConfig(srvCfg)
-	if err != nil {
-		return nil, fmt.Errorf("failed to generate TLS config: %s", err)
-	}
 
 	server := &http.Server{
 		Addr:              srvCfg.Port,
@@ -32,7 +26,6 @@ func New(ctx context.Context, srvCfg *config.Server, repo repository.Repository)
 		IdleTimeout:       120 * time.Second,
 		ReadHeaderTimeout: 5 * time.Second,
 		MaxHeaderBytes:    1 << 20,
-		TLSConfig:         tlsCfg,
 	}
-	return server, nil
+	return server
 }

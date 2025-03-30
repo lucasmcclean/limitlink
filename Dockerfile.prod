@@ -1,0 +1,33 @@
+FROM golang:1.23.6 AS builder
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y curl gnupg lsb-release
+
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g pnpm
+
+COPY go.mod go.sum ./
+RUN go mod tidy
+
+COPY . .
+
+RUN go build -o serve main.go
+
+RUN yes | pnpm -C ./frontend install
+RUN pnpm -C ./frontend run build
+
+
+FROM frolvlad/alpine-glibc:latest
+
+WORKDIR /app
+
+COPY --from=builder /app/serve /app/serve
+COPY --from=builder /app/static /app/static
+
+RUN chmod +x /app/serve
+
+EXPOSE 80
+
+ENTRYPOINT ["./serve"]

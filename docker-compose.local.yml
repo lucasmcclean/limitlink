@@ -1,21 +1,25 @@
 services:
   app:
     container_name: url-shortener
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.local
     environment:
-      ENVIRONMENT: ${ENVIRONMENT}
-      SERVER_PORT: ${SERVER_PORT}
-      SERVER_CERT_PATH: ${SERVER_CERT_PATH}
-      DB_URL: ${DB_URL}
+      DB_HOST: postgres-db  # Must match postgres:container_name
+      DB_PORT: 5432         # Must match postgres:ports
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      ENVIRONMENT: dev
+      SERVER_PORT: 8080
     ports:
-      - "${DOCKER_PORT}:${SERVER_PORT}"
-    # Enables functionality with CompileDaemon; see Dockerfile
+      - "8080:8080"
     volumes:
-      - ./:/app 
+      - .:/app
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     restart: always
+
   postgres:
     container_name: postgres-db
     image: postgres:17.2
@@ -30,7 +34,7 @@ services:
       start_period: 30s
       timeout: 10s
     ports:
-      - "5432:${DB_PORT}"
+      - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
 

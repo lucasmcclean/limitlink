@@ -5,9 +5,7 @@ import (
 )
 
 type Server struct {
-	Port     string
-	CertPath string
-	Env      string
+	Port string
 }
 
 func GetServer(log logger.Logger) *Server {
@@ -15,8 +13,6 @@ func GetServer(log logger.Logger) *Server {
 	var missing []string
 
 	srvCfg.Port, missing = getOrAppendMissing("SERVER_PORT", missing)
-	srvCfg.CertPath, missing = getOrAppendMissing("SERVER_CERT_PATH", missing)
-	srvCfg.Env, missing = getOrAppendMissing("ENVIRONMENT", missing)
 
 	if len(missing) > 0 {
 		log.Fatal("missing server environment variables\n", "missing_env_vars", missing)

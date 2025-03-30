@@ -14,11 +14,17 @@ type DB struct {
 func GetDB(log logger.Logger) *DB {
 	dbCfg := &DB{}
 
-	dbCfg.URL = os.Getenv("DB_URL")
+	port := os.Getenv("DB_PORT")
+	host := os.Getenv("DB_HOST")
+	name := os.Getenv("DB_NAME")
+	user := os.Getenv("DB_USER")
+	pass := os.Getenv("DB_PASSWORD")
 
-	if dbCfg.URL == "" {
-		log.Fatal("missing environment variable DB_URL")
+	if host == "" || port == "" || name == "" || user == "" || pass == "" {
+		log.Fatal("database configuration is incomplete; fill out all required environment variables")
 	}
+
+	dbCfg.URL = fmt.Sprintf("postgres://%s:%s@%s:%s/%s", user, pass, host, port, name)
 
 	return dbCfg
 }

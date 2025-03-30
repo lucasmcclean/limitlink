@@ -15,10 +15,15 @@ import (
 )
 
 func main() {
-	ctx := context.Background()
-	ctx, cancelCtx := signal.NotifyContext(ctx, os.Interrupt)
+	ctx, cancelCtx := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancelCtx()
 
 	log := logger.NewStdLogger(logger.DEBUG, os.Stderr)
+	appCfg := config.GetApp(log)
+
+	if appCfg.IsProd() {
+		log = logger.NewStdLogger(logger.INFO, os.Stderr)
+	}
 
 	dbCfg := config.GetDB(log)
 	srvCfg := config.GetServer(log)
@@ -29,26 +34,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	server, err := server.New(ctx, srvCfg, repo)
-	if err != nil {
-		log.Error("failed to setup HTTPS server", "error", err)
-		err = repo.Close()
-		if err != nil {
-			log.Error("failed to close repository", "error", err)
-		}
-		os.Exit(1)
-	}
-
+	srv := server.New(ctx, srvCfg, repo)
 	go func() {
-		log.Info("listening and serving", "address", server.Addr)
-		err := server.ListenAndServeTLS(srvCfg.CertPath+"/server.crt", srvCfg.CertPath+"/server.key")
+		log.Info("listening and serving", "address", srv.Addr)
+		err := srv.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			log.Error("failed to listen and serve", "error", err)
-			cancelCtx() // Server has failed so begin shutdown
+			cancelCtx() // Trigger shutdown if server fails
 		}
 	}()
-
-	// TODO: Add a server to redirect http requests to https
 
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -58,10 +52,11 @@ func main() {
 		<-ctx.Done()
 
 		shutdownCtx := context.Background()
+		// Give 10 seconds until forced shutdown
 		shutdownCtx, cancelCtx := context.WithTimeout(shutdownCtx, time.Second*10)
 		defer cancelCtx()
 
-		err = server.Shutdown(shutdownCtx)
+		err = srv.Shutdown(shutdownCtx)
 		if err != nil {
 			log.Error("failed to shutdown server", "error", err)
 			successfulShutdown = false
