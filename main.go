@@ -14,14 +14,15 @@ import (
 	"github.com/lucasmcclean/url-shortener/server"
 )
 
+
 func main() {
 	ctx, cancelCtx := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancelCtx()
 
 	log := logger.NewStdLogger(logger.DEBUG, os.Stderr)
-	appCfg := config.GetApp(log)
+	config.InitApp(log)
 
-	if appCfg.IsProd() {
+	if config.App.IsProd() {
 		log = logger.NewStdLogger(logger.INFO, os.Stderr)
 	}
 
