@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: url-shortener
+    container_name: limitlink
     build:
       context: .
       dockerfile: Dockerfile.local

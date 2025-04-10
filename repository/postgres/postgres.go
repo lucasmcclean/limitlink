@@ -12,7 +12,6 @@ type DB struct {
 	pool *sql.DB
 }
 
-// WARN: Currently built with ssl set to 'disable'
 func New(cfg *config.DB) (*DB, error) {
 	connStr := cfg.GenerateConnStrNoSSL()
 
