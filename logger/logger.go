@@ -17,3 +17,8 @@ type Logger interface {
 	Error(msg string, fields ...any)
 	Fatal(msg string, fields ...any)
 }
+
+type MigrateLogger interface {
+  Printf(msg string, fields ...any)
+  Verbose() bool
+}

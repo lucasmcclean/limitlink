@@ -52,6 +52,14 @@ func (sl *StdLogger) Fatal(msg string, fields ...any) {
 	}
 }
 
+func (sl *StdLogger) Printf(msg string, fields ...any) {
+  sl.Info(msg, fields)
+}
+
+func (sl *StdLogger) Verbose() bool {
+  return sl.level >= DEBUG
+}
+
 func formatLog(level LogLevel, callLevel string, msg string, fields ...any) string {
 	var logMsg strings.Builder
 

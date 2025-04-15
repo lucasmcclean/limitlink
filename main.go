@@ -14,7 +14,6 @@ import (
 	"github.com/lucasmcclean/url-shortener/server"
 )
 
-
 func main() {
 	ctx, cancelCtx := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancelCtx()
@@ -34,6 +33,23 @@ func main() {
 		log.Error("couldn't connect to database", "error", err)
 		os.Exit(1)
 	}
+	for range 5 {
+    err = repo.Ping()
+    if err == nil {
+      break
+    }
+    time.Sleep(time.Second)
+	}
+	log.Info("database connection opened")
+
+	var mLog logger.MigrateLogger = log
+	err = repo.Migrate(mLog)
+	if err != nil {
+		log.Error("couldn't perform database migrations", "error", err)
+		repo.Close()
+		os.Exit(1)
+	}
+	log.Info("database migrations ran successfully")
 
 	srv := server.New(ctx, srvCfg, repo)
 	go func() {
