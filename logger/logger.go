@@ -18,7 +18,9 @@ type Logger interface {
 	Fatal(msg string, fields ...any)
 }
 
+// Allows logging with golang-migrate
 type MigrateLogger interface {
+  Logger
   Printf(msg string, fields ...any)
   Verbose() bool
 }

@@ -1,14 +1,22 @@
 package postgres
 
 import (
-	"github.com/golang-migrate/migrate"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/lib/pq"
 	"github.com/lucasmcclean/url-shortener/logger"
 )
 
-// Performs and logs database migrations for a Postgres database. Migrations
-// are listed in repository/postgres/migrations.
 func (db *DB) Migrate(log logger.MigrateLogger) error {
-	migration, err := migrate.New("file://repository/postgres/migrations", db.connStr)
+	driver, err := postgres.WithInstance(db.pool, &postgres.Config{})
+	if err != nil {
+		return err
+	}
+
+	migration, err := migrate.NewWithDatabaseInstance(
+		"file://repository/postgres/migrations",
+		"postgres", driver)
 	if err != nil {
 		return err
 	}

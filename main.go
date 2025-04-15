@@ -28,22 +28,22 @@ func main() {
 	dbCfg := config.GetDB(log)
 	srvCfg := config.GetServer(log)
 
-	repo, err := postgres.New(dbCfg)
+  repo, err := postgres.New(dbCfg)
+	for i := range 5 {
+		if err == nil {
+			break
+		}
+		log.Warn("database connection failed, retrying...", "attempt", i+1, "error", err)
+		time.Sleep(time.Second)
+		repo, err = postgres.New(dbCfg)
+	}
 	if err != nil {
 		log.Error("couldn't connect to database", "error", err)
 		os.Exit(1)
 	}
-	for range 5 {
-    err = repo.Ping()
-    if err == nil {
-      break
-    }
-    time.Sleep(time.Second)
-	}
 	log.Info("database connection opened")
 
-	var mLog logger.MigrateLogger = log
-	err = repo.Migrate(mLog)
+	err = repo.Migrate(log)
 	if err != nil {
 		log.Error("couldn't perform database migrations", "error", err)
 		repo.Close()

@@ -53,7 +53,7 @@ func (sl *StdLogger) Fatal(msg string, fields ...any) {
 }
 
 func (sl *StdLogger) Printf(msg string, fields ...any) {
-  sl.Info(msg, fields)
+  fmt.Printf(msg, fields...)
 }
 
 func (sl *StdLogger) Verbose() bool {

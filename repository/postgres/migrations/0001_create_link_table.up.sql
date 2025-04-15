@@ -1,4 +1,4 @@
-CREATE TABLE "link" (
+CREATE TABLE IF NOT EXISTS "link" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     original TEXT NOT NULL,
     short VARCHAR(16) UNIQUE NOT NULL,
