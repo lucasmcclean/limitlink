@@ -18,7 +18,7 @@ func main() {
 	ctx, cancelCtx := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancelCtx()
 
-	log := logger.NewStdLogger(logger.DEBUG, os.Stderr)
+	log := logger.NewStdLogger(logger.DEBUG, os.Stdout)
 	config.InitApp(log)
 
 	if config.App.IsProd() {
