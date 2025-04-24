@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/lucasmcclean/url-shortener/logger"
+	"github.com/lucasmcclean/url-shortener/internal/logger"
 )
 
 type Server struct {

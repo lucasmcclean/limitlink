@@ -1,4 +1,4 @@
-FROM golang:1.23.6 AS builder
+FROM golang:1.24.2 AS builder
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ RUN go mod tidy
 
 COPY . .
 
-RUN go build -o serve main.go
+RUN go build -o serve ./cmd/limitlink/main.go
 
 RUN yes | pnpm -C ./frontend install
 RUN pnpm -C ./frontend run build

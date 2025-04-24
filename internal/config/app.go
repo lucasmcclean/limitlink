@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/lucasmcclean/url-shortener/logger"
+	"github.com/lucasmcclean/url-shortener/internal/logger"
 )
 
 // Environment represents the application environment.
