@@ -1,0 +1,13 @@
+services:
+  app:
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./:/app
+    environment:
+      - GO_ENV=dev
+    command: ["go", "run", "main.go"]
+
+  mongo:
+    ports:
+      - "27017:27017"

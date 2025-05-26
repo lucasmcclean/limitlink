@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    container_name: limitlink
+    restart: unless-stopped
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/limitlink
+      - PORT=8080
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:8.0
+    container_name: limitlink-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
