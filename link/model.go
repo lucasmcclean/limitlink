@@ -1,10 +1,8 @@
-package main
+package link
 
 import (
-	"context"
 	"time"
 
-	_ "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -28,13 +26,4 @@ type Link struct {
 	AdminToken    string             `bson:"admin_token"`
 	PasswordHash  *string            `bson:"password_hash,omitempty"`
 	SchemaVersion int                `bson:"schema_version"`
-}
-
-type LinkRepo interface {
-	Create(ctx context.Context, link *Link) error
-	GetBySlug(ctx context.Context, slug string) (*Link, error)
-	GetAndInc(ctx context.Context, slug string) (*Link, error)
-	GetByToken(ctx context.Context, adminToken string) (*Link, error)
-	DeleteByToken(ctx context.Context, adminToken string) error
-	UpdateByToken(ctx context.Context, adminToken string, updated *Link) error
 }

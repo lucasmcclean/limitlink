@@ -9,16 +9,26 @@ import (
 	"os/signal"
 	"sync"
 	"time"
+
+	"github.com/lucasmcclean/limitlink/link"
+	"github.com/lucasmcclean/limitlink/server"
 )
 
 func main() {
 	ctx, cancelCtx := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancelCtx()
 
-	server := newServer()
+	repo, err := link.NewMongo("temp", "temp", "temp")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error connecting to database: %s\n", err)
+		cancelCtx()
+		os.Exit(1)
+	}
+
+	srv := server.New(repo)
 	go func() {
-		log.Printf("listening and serving on: %s\n", server.Addr)
-		err := server.ListenAndServe()
+		log.Printf("listening and serving on: %s\n", srv.Addr)
+		err := srv.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			fmt.Fprintf(os.Stderr, "error listening and serving: %s\n", err)
 			cancelCtx()
@@ -32,13 +42,13 @@ func main() {
 		defer wg.Done()
 		<-ctx.Done()
 
-		log.Println("shutting down http server...")
+		log.Println("shutting down http srv...")
 		shutdownCtx, cancelShutdown := context.WithTimeout(context.Background(), time.Second*10)
 		defer cancelShutdown()
 
-		err := server.Shutdown(shutdownCtx)
+		err := srv.Shutdown(shutdownCtx)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "error shutting down http server: %s\n", err)
+			fmt.Fprintf(os.Stderr, "error shutting down http srv: %s\n", err)
 			os.Exit(1)
 		}
 	}()

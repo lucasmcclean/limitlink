@@ -1,13 +1,16 @@
-package main
+package server
 
 import (
 	"net/http"
 	"time"
+
+	"github.com/lucasmcclean/limitlink/link"
 )
 
-func newServer() *http.Server {
+func New(repo link.Repository) *http.Server {
 	mux := http.NewServeMux()
-	registerRoutes(mux)
+
+	registerRoutes(mux, repo)
 
 	var handler http.Handler = mux
 
