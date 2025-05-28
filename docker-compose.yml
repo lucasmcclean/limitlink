@@ -3,9 +3,6 @@ services:
     build: .
     container_name: limitlink
     restart: unless-stopped
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/limitlink
-      - PORT=8080
     depends_on:
       - mongo
 
@@ -13,6 +10,10 @@ services:
     image: mongo:8.0
     container_name: limitlink-mongo
     restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     volumes:
       - mongo_data:/data/db
 

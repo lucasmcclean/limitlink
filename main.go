@@ -18,7 +18,7 @@ func main() {
 	ctx, cancelCtx := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancelCtx()
 
-	repo, err := link.NewMongo("temp", "temp", "temp")
+	repo, err := link.NewMongo()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error connecting to database: %s\n", err)
 		cancelCtx()

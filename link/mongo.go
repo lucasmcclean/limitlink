@@ -2,6 +2,8 @@ package link
 
 import (
 	"context"
+	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -12,13 +14,28 @@ type MongoDB struct {
 	collection *mongo.Collection
 }
 
-func NewMongo(uri, dbName, collectionName string) (*MongoDB, error) {
+func NewMongo() (*MongoDB, error) {
+	uri := os.Getenv("MONGO_URI")
+	if uri == "" {
+		log.Fatal("MONGO_URI is required")
+	}
+
+	dbName := os.Getenv("MONGO_DB_NAME")
+	if dbName == "" {
+		log.Fatal("MONGO_DB_NAME is required")
+	}
+
+	collName := os.Getenv("MONGO_COLLECTION")
+	if collName == "" {
+		log.Fatal("MONGO_COLLECTION is required")
+	}
+
 	client, err := mongo.Connect(options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
 	}
 
-	collection := client.Database(dbName).Collection(collectionName)
+	collection := client.Database(dbName).Collection(collName)
 	return &MongoDB{collection: collection}, nil
 }
 

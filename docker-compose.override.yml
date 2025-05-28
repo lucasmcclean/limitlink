@@ -1,11 +1,16 @@
 services:
   app:
+    image: golang:1.24-alpine
+    working_dir: /app
     ports:
       - "8080:8080"
     volumes:
       - ./:/app
     environment:
       - GO_ENV=dev
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - MONGO_COLLECTION=${MONGO_COLLECTION}
     command: ["go", "run", "main.go"]
 
   mongo:
