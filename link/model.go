@@ -17,12 +17,11 @@ type Link struct {
 	Slug          string             `bson:"slug"`
 	Target        string             `bson:"target"`
 	CreatedAt     time.Time          `bson:"created_at"`
-	ExpiresAt     *time.Time         `bson:"expires_at,omitempty"`
+	ExpiresAt     time.Time          `bson:"expires_at"`
 	UpdatedAt     time.Time          `bson:"updated_at"`
 	MaxHits       *int               `bson:"max_hits,omitempty"`
 	HitCount      int                `bson:"hit_count"`
 	ValidFrom     *time.Time         `bson:"valid_from,omitempty"`
-	ValidTo       *time.Time         `bson:"valid_to,omitempty"`
 	AdminToken    string             `bson:"admin_token"`
 	PasswordHash  *string            `bson:"password_hash,omitempty"`
 	SchemaVersion int                `bson:"schema_version"`
