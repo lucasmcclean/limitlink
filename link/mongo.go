@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
@@ -15,7 +16,7 @@ type MongoDB struct {
 	collection *mongo.Collection
 }
 
-func NewMongo() (*MongoDB, error) {
+func NewMongo(ctx context.Context) (*MongoDB, error) {
 	uri := os.Getenv("MONGO_URI")
 	if uri == "" {
 		return nil, fmt.Errorf("MONGO_URI is required\n")
@@ -37,7 +38,15 @@ func NewMongo() (*MongoDB, error) {
 	}
 
 	collection := client.Database(dbName).Collection(collName)
-	return &MongoDB{collection: collection}, nil
+
+	if err := client.Ping(ctx, nil); err != nil {
+		return nil, err
+	}
+
+	return &MongoDB{
+		client:     client,
+		collection: collection,
+	}, nil
 }
 
 func (db *MongoDB) Close(ctx context.Context) error {
@@ -53,34 +62,42 @@ func (db *MongoDB) Create(ctx context.Context, link *Link) error {
 
 func (db *MongoDB) GetBySlug(ctx context.Context, slug string) (*Link, error) {
 	var result Link
-	err := db.collection.FindOne(ctx, map[string]any{"slug": slug}).Decode(&result)
+	err := db.collection.FindOne(ctx, bson.M{"slug": slug}).Decode(&result)
 	if err != nil {
-		err = validate(&result)
+		return nil, err
 	}
-	return &result, err
+	err = Validate(&result)
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
 }
 
 func (db *MongoDB) GetAndInc(ctx context.Context, slug string) (*Link, error) {
 	var updated Link
 	err := db.collection.FindOneAndUpdate(
 		ctx,
-		map[string]any{"slug": slug},
-		map[string]any{"$inc": map[string]int{"hit_count": 1}},
+		bson.M{"slug": slug},
+		bson.M{"$inc": map[string]int{"hit_count": 1}},
 	).Decode(&updated)
 	if err != nil {
-		err = validate(&updated)
+		return nil, err
+	}
+	err = Validate(&updated)
+	if err != nil {
+		return nil, err
 	}
 	return &updated, err
 }
 
 func (db *MongoDB) GetByToken(ctx context.Context, token string) (*Link, error) {
 	var result Link
-	err := db.collection.FindOne(ctx, map[string]any{"admin_token": token}).Decode(&result)
+	err := db.collection.FindOne(ctx, bson.M{"admin_token": token}).Decode(&result)
 	return &result, err
 }
 
 func (db *MongoDB) DeleteByToken(ctx context.Context, token string) error {
-	_, err := db.collection.DeleteOne(ctx, map[string]any{"admin_token": token})
+	_, err := db.collection.DeleteOne(ctx, bson.M{"admin_token": token})
 	return err
 }
 
@@ -88,8 +105,8 @@ func (db *MongoDB) UpdateByToken(ctx context.Context, token string, updated *Lin
 	updated.UpdatedAt = time.Now()
 	_, err := db.collection.UpdateOne(
 		ctx,
-		map[string]any{"admin_token": token},
-		map[string]any{"$set": updated},
+		bson.M{"admin_token": token},
+		bson.M{"$set": updated},
 	)
 	return err
 }

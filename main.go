@@ -18,17 +18,17 @@ func main() {
 
 	log.Println("starting limitlink...")
 
-	repo, err := link.NewMongo()
+	repo, err := link.NewMongo(ctx)
 	if err != nil {
-		log.Printf("error connecting to database: %s\n", err)
+		log.Printf("error connecting to database: %v\n", err)
 		os.Exit(1)
 	}
 
-	srv := server.New(repo)
+	srv := server.New(ctx, repo)
 	go func() {
 		log.Printf("listening and serving on: %s\n", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Printf("error listening and serving: %s\n", err)
+			log.Printf("error listening and serving: %v\n", err)
 			cancelCtx()
 			os.Exit(1)
 		}
@@ -44,14 +44,14 @@ func main() {
 	success := true
 
 	if err = repo.Close(shutdownCtx); err != nil {
-		log.Printf("error closing database connection: %s\n", err)
+		log.Printf("error closing database connection: %v\n", err)
 		success = false
 	} else {
 		log.Println("database connection closed successfully")
 	}
 
 	if err = srv.Shutdown(shutdownCtx); err != nil {
-		log.Printf("error shutting down http server: %s\n", err)
+		log.Printf("error shutting down http server: %v\n", err)
 		success = false
 	} else {
 		log.Println("http server shut down successfully")

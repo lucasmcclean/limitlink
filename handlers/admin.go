@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"html/template"
 	"net/http"
 	"strings"
@@ -10,7 +11,7 @@ import (
 
 var tmpl = template.Must(template.ParseFiles("templates/admin.html"))
 
-func Admin(repo link.Repository) http.HandlerFunc {
+func AdminLinks(ctx context.Context, repo link.Repository) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request) {
     adminToken := strings.TrimPrefix(r.URL.Path, "/admin/")
 		if adminToken == "" {
