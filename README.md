@@ -15,7 +15,7 @@ To run the app locally, clone the repo and launch it with Docker:
 ```bash
 git clone https://github.com/lucasmcclean/limitlink.git
 cd limitlink
-docker compose -f docker-compose.yml up --build
+docker compose up
 ```
 
 Once it’s up, visit: [http://localhost:8080](http://localhost:8080)
@@ -24,7 +24,11 @@ Once it’s up, visit: [http://localhost:8080](http://localhost:8080)
 ## Project Structure
 
 - **`main.go`** – Entrypoint for the Go backend
-- **`frontend/`** – Contains the frontend files
+- **`static/`** – Contains all static files for the frontend
+- **`templates/`** – Contains the dynamic templates for the frontend
+- **`handlers/`** – All of the handlers for the site endpoints
+- **`link/`** – Includes the link struct, Mongo collection, and
+  associated functionality
 - **`Dockerfile` / `docker-compose.*.yml`** – Build configs for local
   and production environments
 
