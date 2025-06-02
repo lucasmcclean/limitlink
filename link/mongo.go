@@ -2,7 +2,8 @@ package link
 
 import (
 	"context"
-	"fmt"
+	"errors"
+	"log"
 	"os"
 	"time"
 
@@ -19,17 +20,17 @@ type MongoDB struct {
 func NewMongo(ctx context.Context) (*MongoDB, error) {
 	uri := os.Getenv("MONGO_URI")
 	if uri == "" {
-		return nil, fmt.Errorf("MONGO_URI is required\n")
+		return nil, errors.New("MONGO_URI is required\n")
 	}
 
 	dbName := os.Getenv("MONGO_DB_NAME")
 	if dbName == "" {
-		return nil, fmt.Errorf("MONGO_DB_NAME is required\n")
+		return nil, errors.New("MONGO_DB_NAME is required\n")
 	}
 
 	collName := os.Getenv("MONGO_COLLECTION")
 	if collName == "" {
-		return nil, fmt.Errorf("MONGO_COLLECTION is required\n")
+		return nil, errors.New("MONGO_COLLECTION is required\n")
 	}
 
 	client, err := mongo.Connect(options.Client().ApplyURI(uri))
@@ -38,6 +39,10 @@ func NewMongo(ctx context.Context) (*MongoDB, error) {
 	}
 
 	collection := client.Database(dbName).Collection(collName)
+
+	if err := createIndexes(ctx, collection); err != nil {
+		return nil, err
+	}
 
 	if err := client.Ping(ctx, nil); err != nil {
 		return nil, err
@@ -54,8 +59,9 @@ func (db *MongoDB) Close(ctx context.Context) error {
 }
 
 func (db *MongoDB) Create(ctx context.Context, link *Link) error {
-	link.CreatedAt = time.Now()
-	link.UpdatedAt = time.Now()
+	now := time.Now()
+	link.CreatedAt = now
+	link.UpdatedAt = now
 	_, err := db.collection.InsertOne(ctx, link)
 	return err
 }
@@ -78,7 +84,7 @@ func (db *MongoDB) GetAndInc(ctx context.Context, slug string) (*Link, error) {
 	err := db.collection.FindOneAndUpdate(
 		ctx,
 		bson.M{"slug": slug},
-		bson.M{"$inc": map[string]int{"hit_count": 1}},
+		bson.M{"$inc": bson.M{"hit_count": 1}},
 	).Decode(&updated)
 	if err != nil {
 		return nil, err
@@ -109,4 +115,25 @@ func (db *MongoDB) UpdateByToken(ctx context.Context, token string, updated *Lin
 		bson.M{"$set": updated},
 	)
 	return err
+}
+
+func createIndexes(ctx context.Context, coll *mongo.Collection) error {
+	indexes := []mongo.IndexModel{
+		{
+			Keys:    bson.D{{Key: "slug", Value: 1}},
+			Options: options.Index().SetUnique(true).SetName("slug_idx"),
+		},
+		{
+			Keys:    bson.D{{Key: "admin_token", Value: 1}},
+			Options: options.Index().SetUnique(true).SetName("admin_token_idx"),
+		},
+	}
+
+	names, err := coll.Indexes().CreateMany(ctx, indexes)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Created indexes: %v\n", names)
+	return nil
 }

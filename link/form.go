@@ -2,6 +2,7 @@ package link
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -11,12 +12,14 @@ import (
 )
 
 const (
-	fieldTarget    = "target"
-	fieldExpiresIn = "expires_in"
-	fieldExpiresAt = "expires_at"
-	fieldMaxHits   = "max_hits"
-	fieldValidFrom = "valid_from"
-	fieldPassword  = "password"
+	fieldTarget      = "target"
+	fieldExpiresIn   = "expires_in"
+	fieldExpiresAt   = "expires_at"
+	fieldMaxHits     = "max_hits"
+	fieldValidFrom   = "valid_from"
+	fieldPassword    = "password"
+	fieldSlugLength  = "slug_length"
+	fieldSlugCharset = "slug_charset"
 )
 
 var (
@@ -24,6 +27,10 @@ var (
 	ErrInvalidExpiresAtFormat = errors.New("invalid format for expires_at")
 	ErrInvalidValidFromFormat = errors.New("invalid valid_from format")
 	ErrInvalidMaxHitsFormat   = errors.New("invalid max_hits format")
+	ErrInvalidSlugCharset     = errors.New("invalid slug_charset value")
+	ErrInvalidSlugLength      = errors.New(
+		fmt.Sprintf("slug_length must be between %d and %d inclusive", minSlugLen, maxSlugLen),
+	)
 )
 
 // NewFromForm returns a new Link using values from an HTTP form.
@@ -71,13 +78,35 @@ func NewFromForm(form url.Values) (*Link, error) {
 
 	lnk.Target = strings.TrimSpace(form.Get(fieldTarget))
 
+	slugLength := defaultSlugLen
+	if val := form.Get(fieldSlugLength); val != "" {
+		if parsed, err := strconv.Atoi(val); err == nil && parsed >= 6 && parsed <= 12 {
+			slugLength = parsed
+		} else {
+			return nil, ErrInvalidSlugLength
+		}
+	}
+
+	charset := defaultCharset
+	switch form.Get(fieldSlugCharset) {
+	case "", "alphanumeric":
+		charset = alphanumeric
+	case "letters":
+		charset = letters
+	case "numbers":
+		charset = numbers
+	default:
+		return nil, ErrInvalidSlugCharset
+	}
+
 	if err := ValidateNewLink(lnk); err != nil {
 		return nil, err
 	}
 
-	// TODO
-	// lnk.Slug = generateSlug()
-	// lnk.AdminToken = generateAdminToken()
-
+	var err error
+	lnk.Slug, err = generateSlug(slugLength, charset)
+	if err != nil {
+		return nil, err
+	}
 	return lnk, nil
 }
