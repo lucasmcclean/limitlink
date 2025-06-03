@@ -12,6 +12,6 @@ func registerRoutes(mux *http.ServeMux, ctx context.Context, repo link.Repositor
 	mux.Handle("/{$}", handlers.Index())
 	mux.Handle("/links", handlers.Links(ctx, repo))
 	mux.Handle("/static/", http.StripPrefix("/static/", handlers.Static()))
-	mux.Handle("/admin/links/", handlers.AdminLinks(ctx, repo))
-	// mux.Handle("/", handlers.Redirect())
+	mux.Handle("/admin/", handlers.AdminLinks(ctx, repo))
+	mux.Handle("/", handlers.Redirect(ctx, repo))
 }

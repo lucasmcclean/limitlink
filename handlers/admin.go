@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"html/template"
+	"log"
 	"net/http"
 	"strings"
 
@@ -12,14 +13,14 @@ import (
 var tmpl = template.Must(template.ParseFiles("templates/admin.html"))
 
 func AdminLinks(ctx context.Context, repo link.Repository) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
-    adminToken := strings.TrimPrefix(r.URL.Path, "/admin/")
-		if adminToken == "" {
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := strings.TrimPrefix(r.URL.Path, "/admin/")
+		if token == "" {
 			http.Error(w, "missing admin token", http.StatusBadRequest)
 			return
 		}
 
-		lnk, err := repo.GetByToken(r.Context(), adminToken)
+		lnk, err := repo.GetByToken(ctx, token)
 		if err != nil {
 			http.Error(w, "link not found", http.StatusNotFound)
 			return
@@ -28,6 +29,7 @@ func AdminLinks(ctx context.Context, repo link.Repository) http.HandlerFunc {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		err = tmpl.Execute(w, lnk)
 		if err != nil {
+			log.Printf("template render error: %v", err)
 			http.Error(w, "failed to render template", http.StatusInternalServerError)
 		}
 	}
