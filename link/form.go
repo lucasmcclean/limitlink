@@ -87,7 +87,7 @@ func NewFromForm(form url.Values) (*Link, error) {
 		}
 	}
 
-	charset := defaultCharset
+	var charset slugCharset
 	switch form.Get(fieldSlugCharset) {
 	case "", "alphanumeric":
 		charset = alphanumeric
@@ -108,5 +108,11 @@ func NewFromForm(form url.Values) (*Link, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	lnk.AdminToken, err = generateAdminToken()
+	if err != nil {
+		return nil, err
+	}
+
 	return lnk, nil
 }

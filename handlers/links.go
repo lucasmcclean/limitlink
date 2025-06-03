@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/lucasmcclean/limitlink/link"
@@ -27,6 +28,7 @@ func Links(ctx context.Context, repo link.Repository) http.HandlerFunc {
 		}
 
 		if err := repo.Create(ctx, lnk); err != nil {
+			log.Printf("error storing link: %v", err)
 			http.Error(w, "failed to store link", http.StatusInternalServerError)
 			return
 		}
