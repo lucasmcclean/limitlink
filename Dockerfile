@@ -1,7 +1,5 @@
 FROM golang:1.24-alpine AS builder
 
-RUN apk add --no-cache git ca-certificates
-
 WORKDIR /app
 
 COPY go.mod go.sum ./
@@ -15,12 +13,10 @@ RUN CGO_ENABLED=0 \
 
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates
-
 WORKDIR /root/
 
-COPY --from=builder /app/limitlink .
+COPY --from=builder /app/limitlink /root/
 
 EXPOSE 8080
 
-CMD ["./limitlink"]
+CMD ["/root/limitlink"]

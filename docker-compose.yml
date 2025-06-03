@@ -4,7 +4,8 @@ services:
     container_name: limitlink
     restart: unless-stopped
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
 
   mongo:
     image: mongo:8.0
@@ -16,6 +17,10 @@ services:
       - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/limitlink-mongo --quiet
+      interval: 5s
+      timeout: 10s
 
 volumes:
   mongo_data:

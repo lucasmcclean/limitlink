@@ -11,7 +11,6 @@ services:
       - MONGO_URI=${MONGO_URI}
       - MONGO_DB_NAME=${MONGO_DB_NAME}
       - MONGO_COLLECTION=${MONGO_COLLECTION}
-    command: ["go", "run", "main.go"]
 
   mongo:
     ports:
