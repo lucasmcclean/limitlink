@@ -10,9 +10,10 @@ import (
 	"github.com/lucasmcclean/limitlink/link"
 )
 
-var tmpl = template.Must(template.ParseFiles("templates/admin.html"))
 
 func AdminLinks(ctx context.Context, repo link.Repository) http.HandlerFunc {
+	tmpl := template.Must(template.ParseFiles("/root/templates/admin.html"))
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		token := strings.TrimPrefix(r.URL.Path, "/admin/")
 		if token == "" {

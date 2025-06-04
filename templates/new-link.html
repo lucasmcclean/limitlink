@@ -1,0 +1,6 @@
+{{ define "new-link" }}
+<h2>Link Created!</h2>
+<p><b>Slug:</b> <a href="/{{ .Slug }}">{{ .Slug }}</a></p>
+<p><b>Target:</b> {{ .Target }}</p>
+<p><b>Admin Link:</b> https://limitl.ink/admin/{{ .AdminToken }}</p>
+{{ end }}

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"html/template"
 	"log"
 	"net/http"
 
@@ -9,6 +10,8 @@ import (
 )
 
 func Links(ctx context.Context, repo link.Repository) http.HandlerFunc {
+	tmpl := template.Must(template.ParseFiles("/root/templates/new-link.html"))
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -34,5 +37,10 @@ func Links(ctx context.Context, repo link.Repository) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusCreated)
+
+		if err := tmpl.ExecuteTemplate(w, "new-link", lnk); err != nil {
+			log.Printf("template execution error: %v", err)
+			http.Error(w, "template error", http.StatusInternalServerError)
+		}
 	}
 }

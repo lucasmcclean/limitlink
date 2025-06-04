@@ -3,5 +3,5 @@ package handlers
 import "net/http"
 
 func Static() http.Handler {
-	return http.FileServer(http.Dir("static"))
+	return http.FileServer(http.Dir("/root/static"))
 }

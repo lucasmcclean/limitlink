@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LimitL.ink</title>
+  <script defer src="/static/js/htmx.min.js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -33,60 +34,66 @@
 </head>
 <body>
   <h1>LimitL.ink</h1>
-  <form action="/links" method="POST" id="linkForm">
-    <div>
-      <label for="target">Target URL:</label>
-      <input type="url" id="target" name="target" required placeholder="https://example.com">
-    </div>
+  <div id="content">
+    <form
+      hx-post="/links"
+      hx-target="#content"
+      hx-swap="innerHTML"
+    >
+      <div>
+        <label for="target">Target URL:</label>
+        <input type="url" id="target" name="target" required placeholder="https://example.com">
+      </div>
 
-    <div>
-      <label for="expires_in">Expires In:</label>
-      <select id="expires_in" name="expires_in">
-        <option value="1">1 day</option>
-        <option value="7" selected>7 days</option>
-        <option value="30">30 days</option>
-        <option value="custom">Custom date/time</option>
-      </select>
-    </div>
+      <div>
+        <label for="expires_in">Expires In:</label>
+        <select id="expires_in" name="expires_in">
+          <option value="1">1 day</option>
+          <option value="7" selected>7 days</option>
+          <option value="30">30 days</option>
+          <option value="custom">Custom date/time</option>
+        </select>
+      </div>
 
-    <div id="expires_custom_container" style="display: none;">
-      <label for="expires_at">Custom Expiry:</label>
-      <input type="datetime-local" id="expires_at" name="expires_at">
-    </div>
+      <div id="expires_custom_container" style="display: none;">
+        <label for="expires_at">Custom Expiry:</label>
+        <input type="datetime-local" id="expires_at" name="expires_at">
+      </div>
 
-    <div>
-      <label for="max_hits">Max Hits <span class="optional">(optional)</span>:</label>
-      <input type="number" id="max_hits" name="max_hits" min="1" max="999999999" placeholder="Unlimited">
-    </div>
+      <div>
+        <label for="max_hits">Max Hits <span class="optional">(optional)</span>:</label>
+        <input type="number" id="max_hits" name="max_hits" min="1" max="999999999" placeholder="Unlimited">
+      </div>
 
-    <div>
-      <label for="valid_from">Valid From <span class="optional">(optional)</span>:</label>
-      <input type="datetime-local" id="valid_from" name="valid_from">
-    </div>
+      <div>
+        <label for="valid_from">Valid From <span class="optional">(optional)</span>:</label>
+        <input type="datetime-local" id="valid_from" name="valid_from">
+      </div>
 
-    <div>
-      <label for="password">Password <span class="optional">(optional)</span>:</label>
-      <input type="password" id="password" name="password" placeholder="Leave blank for none">
-    </div>
+      <div>
+        <label for="password">Password <span class="optional">(optional)</span>:</label>
+        <input type="password" id="password" name="password" placeholder="Leave blank for none">
+      </div>
 
-    <div>
-      <label for="slug_length">Slug Length <span class="optional">(default: 7)</span>:</label>
-      <input type="number" id="slug_length" name="slug_length" min="6" max="12" placeholder="7">
-    </div>
+      <div>
+        <label for="slug_length">Slug Length <span class="optional">(default: 7)</span>:</label>
+        <input type="number" id="slug_length" name="slug_length" min="6" max="12" placeholder="7">
+      </div>
 
-    <div>
-      <label for="slug_charset">Slug Charset <span class="optional">(default: alphanumeric)</span>:</label>
-      <select id="slug_charset" name="slug_charset">
-        <option value="alphanumeric" selected>Alphanumeric (a-z, A-Z, 0-9)</option>
-        <option value="letters">Letters only (a-z, A-Z)</option>
-        <option value="numbers">Numbers only (0-9)</option>
-      </select>
-    </div>
+      <div>
+        <label for="slug_charset">Slug Charset <span class="optional">(default: alphanumeric)</span>:</label>
+        <select id="slug_charset" name="slug_charset">
+          <option value="alphanumeric" selected>Alphanumeric (a-z, A-Z, 0-9)</option>
+          <option value="letters">Letters only (a-z, A-Z)</option>
+          <option value="numbers">Numbers only (0-9)</option>
+        </select>
+      </div>
 
-    <div>
-      <button type="submit">Create Link</button>
-    </div>
-  </form>
+      <div>
+        <button type="submit">Create Link</button>
+      </div>
+    </form>
+  </div>
 
   <script>
     const expiresSelect = document.getElementById('expires_in');
