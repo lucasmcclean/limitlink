@@ -4,8 +4,6 @@ services:
     working_dir: /app
     ports:
       - "8080:8080"
-    volumes:
-      - ./:/app
     environment:
       - GO_ENV=dev
       - MONGO_URI=${MONGO_URI}
@@ -15,3 +13,4 @@ services:
   mongo:
     ports:
       - "27017:27017"
+    command: --quiet
