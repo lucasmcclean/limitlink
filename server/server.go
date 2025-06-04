@@ -2,16 +2,22 @@ package server
 
 import (
 	"context"
+	"io/fs"
 	"net/http"
 	"time"
 
 	"github.com/lucasmcclean/limitlink/link"
 )
 
-func New(ctx context.Context, repo link.Repository) *http.Server {
+func New(
+	ctx context.Context,
+	repo link.Repository,
+	staticFS fs.FS,
+	templatesFS fs.FS,
+) *http.Server {
 	mux := http.NewServeMux()
 
-	registerRoutes(mux, ctx, repo)
+	registerRoutes(mux, ctx, repo, staticFS, templatesFS)
 
 	var handler http.Handler = mux
 

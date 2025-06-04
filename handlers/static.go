@@ -1,7 +1,10 @@
 package handlers
 
-import "net/http"
+import (
+	"io/fs"
+	"net/http"
+)
 
-func Static() http.Handler {
-	return http.FileServer(http.Dir("/root/static"))
+func Static(staticFS fs.FS) http.Handler {
+	return http.FileServer(http.FS(staticFS))
 }

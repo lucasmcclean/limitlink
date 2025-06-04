@@ -1,9 +1,18 @@
 package handlers
 
-import "net/http"
+import (
+	"io/fs"
+	"log"
+	"net/http"
+)
 
-func Index() http.HandlerFunc {
+func Index(staticFS fs.FS) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "/root/static/index.html")
+		entries, _ := fs.ReadDir(staticFS, "static")
+		for _, entry := range entries {
+			log.Println("entry:", entry.Name())
+		}
+
+		http.ServeFileFS(w, r, staticFS, "index.html")
 	}
 }

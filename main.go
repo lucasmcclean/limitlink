@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"embed"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +13,14 @@ import (
 	"github.com/lucasmcclean/limitlink/link"
 	"github.com/lucasmcclean/limitlink/server"
 )
+
+//go:embed static/*
+var staticEmbed embed.FS
+var staticFS, _ = fs.Sub(staticEmbed, "static")
+
+//go:embed templates/*
+var templatesEmbed embed.FS
+var templatesFS, _ = fs.Sub(templatesEmbed, "templates")
 
 func main() {
 	ctx, cancelCtx := signal.NotifyContext(context.Background(), os.Interrupt)
@@ -24,7 +34,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	srv := server.New(ctx, repo)
+	srv := server.New(ctx, repo, staticFS, templatesFS)
 	go func() {
 		log.Printf("listening and serving on: %s\n", srv.Addr)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {

@@ -3,14 +3,16 @@ package handlers
 import (
 	"context"
 	"html/template"
+	"io/fs"
 	"log"
 	"net/http"
 
 	"github.com/lucasmcclean/limitlink/link"
 )
 
-func Links(ctx context.Context, repo link.Repository) http.HandlerFunc {
-	tmpl := template.Must(template.ParseFiles("/root/templates/new-link.html"))
+
+func Links(ctx context.Context, repo link.Repository, templatesFS fs.FS) http.HandlerFunc {
+	tmpl := template.Must(template.ParseFS(templatesFS, "new-link.html"))
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
