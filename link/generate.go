@@ -3,10 +3,11 @@ package link
 import (
 	"crypto/rand"
 	"math/big"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type slugCharset int
-
 const (
 	alphanumeric slugCharset = iota
 	letters
@@ -25,6 +26,8 @@ const (
 	defaultSlugLen = 7
 	adminTokenLen  = 22
 )
+
+const hashCost = bcrypt.DefaultCost
 
 func generateSlug(length int, charset slugCharset) (string, error) {
 	var chars string
@@ -65,4 +68,14 @@ func generateAdminToken() (string, error) {
 	}
 
 	return string(token), nil
+}
+
+func generateHash(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), hashCost)
+	return string(bytes), err
+}
+
+func VerifyPassword(hash string, password string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil, nil
 }

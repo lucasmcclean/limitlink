@@ -79,21 +79,13 @@ func (db *MongoDB) GetBySlug(ctx context.Context, slug string) (*Link, error) {
 	return &result, nil
 }
 
-func (db *MongoDB) GetAndInc(ctx context.Context, slug string) (*Link, error) {
-	var updated Link
+func (db *MongoDB) IncBySlug(ctx context.Context, slug string) error {
 	err := db.collection.FindOneAndUpdate(
 		ctx,
 		bson.M{"slug": slug},
 		bson.M{"$inc": bson.M{"hit_count": 1}},
-	).Decode(&updated)
-	if err != nil {
-		return nil, err
-	}
-	err = Validate(&updated)
-	if err != nil {
-		return nil, err
-	}
-	return &updated, err
+	).Err()
+	return err
 }
 
 func (db *MongoDB) GetByToken(ctx context.Context, token string) (*Link, error) {

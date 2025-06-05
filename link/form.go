@@ -114,5 +114,13 @@ func NewFromForm(form url.Values) (*Link, error) {
 		return nil, err
 	}
 
+	if val := form.Get(fieldPassword); val != "" {
+		hash, err := generateHash(val)
+		if err != nil {
+			return nil, err
+		}
+		lnk.PasswordHash = &hash
+	}
+
 	return lnk, nil
 }

@@ -20,5 +20,5 @@ func registerRoutes(
 	mux.Handle("/links", handlers.Links(ctx, repo, templatesFS))
 	mux.Handle("/static/", http.StripPrefix("/static/", handlers.Static(staticFS)))
 	mux.Handle("/admin/", handlers.AdminLinks(ctx, repo, templatesFS))
-	mux.Handle("/", handlers.Redirect(ctx, repo))
+	mux.Handle("/", handlers.Redirect(ctx, repo, templatesFS))
 }
