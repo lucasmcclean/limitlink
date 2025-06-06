@@ -10,7 +10,7 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/lucasmcclean/limitlink/link"
+	"github.com/lucasmcclean/limitlink/mongo"
 	"github.com/lucasmcclean/limitlink/server"
 )
 
@@ -28,7 +28,7 @@ func main() {
 
 	log.Println("starting limitlink...")
 
-	repo, err := link.NewMongo(ctx)
+	repo, err := mongo.New(ctx)
 	if err != nil {
 		log.Printf("error connecting to database: %v\n", err)
 		os.Exit(1)

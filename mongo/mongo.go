@@ -1,4 +1,4 @@
-package link
+package mongo
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/lucasmcclean/limitlink/link"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -17,7 +18,7 @@ type MongoDB struct {
 	collection *mongo.Collection
 }
 
-func NewMongo(ctx context.Context) (*MongoDB, error) {
+func New(ctx context.Context) (*MongoDB, error) {
 	uri := os.Getenv("MONGO_URI")
 	if uri == "" {
 		return nil, errors.New("MONGO_URI is required\n")
@@ -58,7 +59,7 @@ func (db *MongoDB) Close(ctx context.Context) error {
 	return db.client.Disconnect(ctx)
 }
 
-func (db *MongoDB) Create(ctx context.Context, link *Link) error {
+func (db *MongoDB) Create(ctx context.Context, link *link.Link) error {
 	now := time.Now()
 	link.CreatedAt = now
 	link.UpdatedAt = now
@@ -66,13 +67,13 @@ func (db *MongoDB) Create(ctx context.Context, link *Link) error {
 	return err
 }
 
-func (db *MongoDB) GetBySlug(ctx context.Context, slug string) (*Link, error) {
-	var result Link
+func (db *MongoDB) GetBySlug(ctx context.Context, slug string) (*link.Link, error) {
+	var result link.Link
 	err := db.collection.FindOne(ctx, bson.M{"slug": slug}).Decode(&result)
 	if err != nil {
 		return nil, err
 	}
-	err = Validate(&result)
+	err = link.Validate(&result)
 	if err != nil {
 		return nil, err
 	}
@@ -88,8 +89,8 @@ func (db *MongoDB) IncBySlug(ctx context.Context, slug string) error {
 	return err
 }
 
-func (db *MongoDB) GetByToken(ctx context.Context, token string) (*Link, error) {
-	var result Link
+func (db *MongoDB) GetByToken(ctx context.Context, token string) (*link.Link, error) {
+	var result link.Link
 	err := db.collection.FindOne(ctx, bson.M{"admin_token": token}).Decode(&result)
 	return &result, err
 }
@@ -99,7 +100,7 @@ func (db *MongoDB) DeleteByToken(ctx context.Context, token string) error {
 	return err
 }
 
-func (db *MongoDB) UpdateByToken(ctx context.Context, token string, updated *Link) error {
+func (db *MongoDB) UpdateByToken(ctx context.Context, token string, updated *link.Link) error {
 	updated.UpdatedAt = time.Now()
 	_, err := db.collection.UpdateOne(
 		ctx,

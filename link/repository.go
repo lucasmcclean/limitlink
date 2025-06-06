@@ -1,8 +1,12 @@
 package link
 
-import "context"
+import (
+	"context"
+)
 
 type Repository interface {
+	Close(ctx context.Context) error
+
 	Create(ctx context.Context, link *Link) error
 	GetBySlug(ctx context.Context, slug string) (*Link, error)
 	IncBySlug(ctx context.Context, slug string) error
