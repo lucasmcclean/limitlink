@@ -18,6 +18,8 @@ type MongoDB struct {
 	collection *mongo.Collection
 }
 
+const cleanupInterval = time.Second * 10
+
 func New(ctx context.Context) (*MongoDB, error) {
 	uri := os.Getenv("MONGO_URI")
 	if uri == "" {
@@ -49,10 +51,14 @@ func New(ctx context.Context) (*MongoDB, error) {
 		return nil, err
 	}
 
-	return &MongoDB{
+	repo := &MongoDB{
 		client:     client,
 		collection: collection,
-	}, nil
+	}
+
+	repo.scheduleLinksCleanup(ctx, cleanupInterval)
+
+	return repo, nil
 }
 
 func (db *MongoDB) Close(ctx context.Context) error {

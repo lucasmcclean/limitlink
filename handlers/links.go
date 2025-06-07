@@ -10,7 +10,6 @@ import (
 	"github.com/lucasmcclean/limitlink/link"
 )
 
-
 func Links(ctx context.Context, repo link.Repository, templatesFS fs.FS) http.HandlerFunc {
 	tmpl := template.Must(template.ParseFS(templatesFS, "new-link.html"))
 

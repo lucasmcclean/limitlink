@@ -11,8 +11,7 @@ import (
 	"github.com/lucasmcclean/limitlink/link"
 )
 
-
-func AdminLinks(ctx context.Context, repo link.Repository, templatesFS fs.FS) http.HandlerFunc {
+func Admin(ctx context.Context, repo link.Repository, templatesFS fs.FS) http.HandlerFunc {
 	tmpl := template.Must(template.ParseFS(templatesFS, "admin.html"))
 
 	return func(w http.ResponseWriter, r *http.Request) {

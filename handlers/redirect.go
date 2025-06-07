@@ -11,7 +11,7 @@ import (
 )
 
 func Redirect(ctx context.Context, repo link.Repository, templatesFS fs.FS) http.HandlerFunc {
-	var tmpl = template.Must(template.ParseFS(templatesFS, "password.html"))
+	tmpl := template.Must(template.ParseFS(templatesFS, "password.html"))
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := strings.TrimPrefix(r.URL.Path, "/")
