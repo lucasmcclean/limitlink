@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"io/fs"
 	"net/http"
+
+	"github.com/lucasmcclean/limitlink/assets"
 )
 
-func Static(staticFS fs.FS) http.Handler {
-	return http.FileServer(http.FS(staticFS))
+func Static() http.Handler {
+	return http.FileServer(http.FS(assets.StaticFS()))
 }

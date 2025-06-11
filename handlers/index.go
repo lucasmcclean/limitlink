@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"io/fs"
 	"net/http"
+
+	"github.com/lucasmcclean/limitlink/assets"
 )
 
-func Index(staticFS fs.FS) http.HandlerFunc {
+func Index() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFileFS(w, r, staticFS, "index.html")
+		http.ServeFileFS(w, r, assets.StaticFS(), "index.html")
 	}
 }
