@@ -1,127 +1,165 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LimitL.ink</title>
-  <link href="/static/css/tailwind.css" rel="stylesheet">
-  <script defer src="/static/js/htmx.min.js"></script>
-  <style>
-    body {
-      font-family: sans-serif;
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 1rem;
-    }
-    form > div {
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      margin-bottom: 0.3rem;
-      font-weight: 600;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 0.5rem;
-      font-size: 1rem;
-    }
-    .optional {
-      font-weight: normal;
-      color: #666;
-      font-style: italic;
-    }
-  </style>
-</head>
-<body>
-  <h1>LimitL.ink</h1>
-  <div id="content">
-    <form
-      hx-post="/links"
-      hx-target="#content"
-      hx-swap="innerHTML"
-    >
-      <div>
-        <label for="target">Target URL:</label>
-        <input type="url" id="target" name="target" required placeholder="https://example.com">
-      </div>
-
-      <div>
-        <label for="expires_in">Expires In:</label>
-        <select id="expires_in" name="expires_in">
-          <option value="1">1 day</option>
-          <option value="7" selected>7 days</option>
-          <option value="30">30 days</option>
-          <option value="custom">Custom date/time</option>
-        </select>
-      </div>
-
-      <div id="expires_custom_container" style="display: none;">
-        <label for="expires_at">Custom Expiry:</label>
-        <input type="datetime-local" id="expires_at" name="expires_at">
-      </div>
-
-      <div>
-        <label for="max_hits">Max Hits <span class="optional">(optional)</span>:</label>
-        <input type="number" id="max_hits" name="max_hits" min="1" max="999999999" placeholder="Unlimited">
-      </div>
-
-      <div>
-        <label for="valid_from">Valid From <span class="optional">(optional)</span>:</label>
-        <input type="datetime-local" id="valid_from" name="valid_from">
-      </div>
-
-      <div>
-        <label for="password">Password <span class="optional">(optional)</span>:</label>
-        <input type="password" id="password" name="password" placeholder="Leave blank for none">
-      </div>
-
-      <div>
-        <label for="slug_length">Slug Length <span class="optional">(default: 7)</span>:</label>
-        <input type="number" id="slug_length" name="slug_length" min="6" max="12" placeholder="7">
-      </div>
-
-      <div>
-        <label for="slug_charset">Slug Charset <span class="optional">(default: alphanumeric)</span>:</label>
-        <select id="slug_charset" name="slug_charset">
-          <option value="alphanumeric" selected>Alphanumeric (a-z, A-Z, 0-9)</option>
-          <option value="letters">Letters only (a-z, A-Z)</option>
-          <option value="numbers">Numbers only (0-9)</option>
-        </select>
-      </div>
-
-      <div>
-        <button type="submit">Create Link</button>
-      </div>
-    </form>
-  </div>
-
-  <script>
-    const expiresSelect = document.getElementById('expires_in');
-    const customContainer = document.getElementById('expires_custom_container');
-    const expiresInput = document.getElementById('expires_at');
-    const form = document.getElementById('linkForm');
-
-    function updateExpiry() {
-      const choice = expiresSelect.value;
-
-      if (choice === 'custom') {
-        customContainer.style.display = 'block';
-        expiresInput.disabled = false;
-        expiresSelect.name = '';        // Prevent this field from being submitted
-        expiresInput.name = 'expires_at'; // Submit custom date instead
-      } else {
-        customContainer.style.display = 'none';
-        expiresInput.disabled = true;
-        expiresSelect.name = 'expires_in';  // Submit days
-        expiresInput.name = '';             // Prevent date from being submitted
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LimitL.ink</title>
+    <link href="/static/css/tailwind.css" rel="stylesheet" />
+    <script defer src="/static/js/htmx.min.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
       }
-    }
+      form > div {
+        margin-bottom: 1rem;
+      }
+      label {
+        display: block;
+        margin-bottom: 0.3rem;
+        font-weight: 600;
+      }
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 0.5rem;
+        font-size: 1rem;
+      }
+      .optional {
+        font-weight: normal;
+        color: #666;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>LimitL.ink</h1>
+    <div id="content">
+      <form hx-post="/links" hx-target="#content" hx-swap="innerHTML">
+        <div>
+          <label for="target">Target URL:</label>
+          <input
+            type="url"
+            id="target"
+            name="target"
+            required
+            placeholder="https://example.com"
+          />
+        </div>
 
-    expiresSelect.addEventListener('change', updateExpiry);
+        <div>
+          <label for="expires_in">Expires In:</label>
+          <select id="expires_in" name="expires_in">
+            <option value="1">1 day</option>
+            <option value="7" selected>7 days</option>
+            <option value="30">30 days</option>
+            <option value="custom">Custom date/time</option>
+          </select>
+        </div>
 
-    // Initialize on load
-    updateExpiry();
-  </script>
-</body>
+        <div id="expires_custom_container" style="display: none">
+          <label for="expires_at">Custom Expiry:</label>
+          <input type="datetime-local" id="expires_at" name="expires_at" />
+        </div>
+
+        <div>
+          <label for="max_hits"
+            >Max Hits <span class="optional">(optional)</span>:</label
+          >
+          <input
+            type="number"
+            id="max_hits"
+            name="max_hits"
+            min="1"
+            max="999999999"
+            placeholder="Unlimited"
+          />
+        </div>
+
+        <div>
+          <label for="valid_from"
+            >Valid From <span class="optional">(optional)</span>:</label
+          >
+          <input type="datetime-local" id="valid_from" name="valid_from" />
+        </div>
+
+        <div>
+          <label for="password"
+            >Password <span class="optional">(optional)</span>:</label
+          >
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Leave blank for none"
+          />
+        </div>
+
+        <div>
+          <label for="slug_length"
+            >Slug Length <span class="optional">(default: 7)</span>:</label
+          >
+          <input
+            type="number"
+            id="slug_length"
+            name="slug_length"
+            min="6"
+            max="12"
+            placeholder="7"
+          />
+        </div>
+
+        <div>
+          <label for="slug_charset"
+            >Slug Charset
+            <span class="optional">(default: alphanumeric)</span>:</label
+          >
+          <select id="slug_charset" name="slug_charset">
+            <option value="alphanumeric" selected>
+              Alphanumeric (a-z, A-Z, 0-9)
+            </option>
+            <option value="letters">Letters only (a-z, A-Z)</option>
+            <option value="numbers">Numbers only (0-9)</option>
+          </select>
+        </div>
+
+        <div>
+          <button type="submit">Create Link</button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      const expiresSelect = document.getElementById("expires_in");
+      const customContainer = document.getElementById(
+        "expires_custom_container",
+      );
+      const expiresInput = document.getElementById("expires_at");
+      const form = document.getElementById("linkForm");
+
+      function updateExpiry() {
+        const choice = expiresSelect.value;
+
+        if (choice === "custom") {
+          customContainer.style.display = "block";
+          expiresInput.disabled = false;
+          expiresSelect.name = ""; // Prevent this field from being submitted
+          expiresInput.name = "expires_at"; // Submit custom date instead
+        } else {
+          customContainer.style.display = "none";
+          expiresInput.disabled = true;
+          expiresSelect.name = "expires_in"; // Submit days
+          expiresInput.name = ""; // Prevent date from being submitted
+        }
+      }
+
+      expiresSelect.addEventListener("change", updateExpiry);
+
+      // Initialize on load
+      updateExpiry();
+    </script>
+  </body>
 </html>
