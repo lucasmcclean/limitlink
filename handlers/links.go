@@ -37,7 +37,6 @@ func Links(repo link.Repository) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusCreated)
-
 		if err := tmpl.ExecuteTemplate(w, "new-link", lnk); err != nil {
 			log.Printf("template execution error: %v", err)
 			http.Error(w, "template error", http.StatusInternalServerError)
