@@ -38,28 +38,16 @@ version updated should it change in the future. More details can be found on
 Once you have Tailwind installed, you can run it with:
 
 ```bash
-./tailwindcss -i ./tailwind.css -o ./static/css/tailwind.css --watch \
-  --content "./templates/**/*.html,./static/html/**/*.html,./static/index.html"
+./tailwindcss -i ./tailwind.css -o ./assets/static/css/tailwind.css --watch \
+  --content "./assets/templates/**/*.html,./assets/static/html/**/*.html"
 ```
 
 or, for production, run:
 
 ```bash
-./tailwindcss -i ./tailwind.css -o ./static/css/tailwind.css --minify \
-  --content "./templates/**/*.html,./static/html/**/*.html,./static/index.html"
+./tailwindcss -i ./tailwind.css -o ./assets/static/css/tailwind.css --minify \
+  --content "./assets/templates/**/*.html,./assets/static/html/**/*.html"
 ```
-
-## Project Structure
-
-- **`main.go`** – Entrypoint for the Go backend
-- **`static/`** – Contains all static files for the frontend
-- **`templates/`** – Contains the dynamic templates for the frontend
-- **`handlers/`** – All of the handlers for the site endpoints
-- **`link/`** – Includes the link struct, Mongo collection, and
-  associated functionality
-- **`Dockerfile` / `docker-compose.*.yml`** – Build configs for local
-  and production environments
-
 
 ## License
 
