@@ -6,15 +6,44 @@
     <title>LimitL.ink | Admin</title>
     <link href="/static/css/tailwind.css" rel="stylesheet" />
   </head>
-  <body>
-    <h1>LimitL.ink Admin Panel</h1>
-    <p>Created at: {{ .CreatedAt }}</p>
-    <p>Expires at: {{ .ExpiresAt }}</p>
-    <p>Last updated: {{ .ExpiresAt }}</p>
-    <p>Number of hits: {{ .HitCount }}</p>
-    {{ if .MaxHits }}
-    <p>Max hits: {{ .MaxHits }} {{ end }} {{ if .ValidFrom }}</p>
+  <body class="min-h-screen bg-background text-text font-sans px-6 py-10">
+    <div
+      class="max-w-2xl mx-auto bg-surface p-8 rounded-2xl shadow-lg space-y-6 border border-accent/20"
+    >
+      <h1 class="text-4xl font-display font-extrabold tracking-tight">
+        LimitL<span class="opacity-50">.</span>ink Admin Panel
+      </h1>
 
-    <p>Valid starting at: {{ .MaxHits }} {{ end }}</p>
+      <div class="space-y-2 text-lg">
+        <p>
+          <span class="font-semibold text-accent">Created at:</span> {{
+          .CreatedAt }}
+        </p>
+        <p>
+          <span class="font-semibold text-accent">Expires at:</span> {{
+          .ExpiresAt }}
+        </p>
+        <p>
+          <span class="font-semibold text-accent">Last updated:</span> {{
+          .ExpiresAt }}
+        </p>
+        <p>
+          <span class="font-semibold text-accent">Number of hits:</span> {{
+          .HitCount }}
+        </p>
+
+        {{ if .MaxHits }}
+        <p>
+          <span class="font-semibold text-accent">Max hits:</span> {{ .MaxHits
+          }}
+        </p>
+        {{ end }} {{ if .ValidFrom }}
+        <p>
+          <span class="font-semibold text-accent">Valid starting at:</span> {{
+          .ValidFrom }}
+        </p>
+        {{ end }}
+      </div>
+    </div>
   </body>
 </html>

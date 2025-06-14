@@ -3,4 +3,4 @@
 @tailwind utilities;
 
 @import "tailwindcss";
-@import "./assets/static/css/index.css";
+@import "./assets/static/css/theme.css";

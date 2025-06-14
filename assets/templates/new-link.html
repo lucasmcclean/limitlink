@@ -1,6 +1,22 @@
 {{ define "new-link" }}
-<h2>Link Created!</h2>
-<p><b>Slug:</b> <a href="/{{ .Slug }}">{{ .Slug }}</a></p>
-<p><b>Target:</b> {{ .Target }}</p>
-<p><b>Admin Link:</b> https://limitl.ink/admin/{{ .AdminToken }}</p>
+<div
+  class="max-w-xl mx-auto bg-surface p-6 rounded-2xl shadow-lg border border-secondary/30 space-y-4 mt-10"
+>
+  <h2 class="text-3xl font-bold text-text">Link Created!</h2>
+  <p>
+    <b class="text-accent">Slug:</b>
+    <a href="/{{ .Slug }}" class="text-secondary underline hover:opacity-80"
+      >/{{ .Slug }}</a
+    >
+  </p>
+  <p><b class="text-accent">Target:</b> {{ .Target }}</p>
+  <p>
+    <b class="text-accent">Admin Link:</b>
+    <a
+      href="https://limitl.ink/admin/{{ .AdminToken }}"
+      class="text-secondary underline hover:opacity-80"
+      >https://limitl.ink/admin/{{ .AdminToken }}</a
+    >
+  </p>
+</div>
 {{ end }}
