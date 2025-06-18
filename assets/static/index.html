@@ -7,6 +7,7 @@
     <link href="/static/css/tailwind.css" rel="stylesheet" />
     <script defer src="/static/js/htmx.min.js"></script>
   </head>
+
   <body>
     <main class="flex flex-col gap-8">
       <div class="absolute w-1 h-screen rotate-55 left-11/16 bg-accent"></div>
@@ -14,25 +15,34 @@
         class="absolute w-1 h-screen rotate-45 left-11/16 bg-secondary"
       ></div>
       <div class="absolute w-1 h-screen rotate-35 left-11/16 bg-text/90"></div>
+
       <section class="h-screen ps-16 flex flex-col justify-center gap-4">
         <h1 class="text-8xl font-display font-extrabold tracking-normal">
           LimitL<span class="opacity-50">.</span>ink
         </h1>
         <h2 class="text-2xl">Create expiring links in seconds!</h2>
         <div class="flex mt-4 gap-4 text-xl font-bold">
-          <button
-            class="w-fit px-4 py-2 rounded-xl bg-surface border border-accent"
-          >
-            Learn More
-          </button>
           <a
-            class="w-fit px-4 py-2 rounded-xl text-text hover:text-text bg-gradient-to-r from-accent to-secondary border border-surface"
-            href="#new-link"
+            href="#learn-more"
+            class="relative group w-fit px-4 py-2 rounded-xl border border-surface overflow-hidden transition-colors duration-300 hover:border-accent"
           >
-            Get Started
+            <div
+              class="absolute inset-0 bg-surface group-hover:opacity-0 transition-opacity duration-300"
+            ></div>
+            <span class="relative z-10 text-text">Learn More</span>
+          </a>
+          <a
+            href="#new-link"
+            class="relative group w-fit px-4 py-2 rounded-xl border border-surface overflow-hidden transition-colors duration-300 hover:border-accent"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-accent to-secondary group-hover:opacity-0 transition-opacity duration-300"
+            ></div>
+            <span class="relative z-10 text-text">Get Started</span>
           </a>
         </div>
       </section>
+
       <section
         id="new-link"
         class="w-full my-32 flex flex-col justify-center items-center"
@@ -204,6 +214,7 @@
         </form>
       </section>
     </main>
+
     <footer class="px-16 py-8 flex justify-between">
       <p class="opacity-70">
         &copy; 2025 Lucas McClean &mdash; LimitLink&trade;
