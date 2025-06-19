@@ -14,13 +14,13 @@ func Links(repo link.Repository) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			http.Error(w, "Sorry, this action is not allowed.", http.StatusMethodNotAllowed)
 			return
 		}
 
 		err := r.ParseForm()
 		if err != nil {
-			http.Error(w, "invalid form data", http.StatusBadRequest)
+			http.Error(w, "There was a problem processing your form. Please try again.", http.StatusBadRequest)
 			return
 		}
 
@@ -32,14 +32,14 @@ func Links(repo link.Repository) http.HandlerFunc {
 
 		if err := repo.Create(r.Context(), lnk); err != nil {
 			log.Printf("error storing link: %v", err)
-			http.Error(w, "failed to store link", http.StatusInternalServerError)
+			http.Error(w, "Something went wrong while saving your link. Please try again later.", http.StatusInternalServerError)
 			return
 		}
 
 		w.WriteHeader(http.StatusCreated)
 		if err := tmpl.ExecuteTemplate(w, "new-link", lnk); err != nil {
 			log.Printf("template execution error: %v", err)
-			http.Error(w, "template error", http.StatusInternalServerError)
+			http.Error(w, "There was an error loading the page. Please try again.", http.StatusInternalServerError)
 		}
 	}
 }
