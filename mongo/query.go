@@ -2,11 +2,14 @@ package mongo
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/lucasmcclean/limitlink/link"
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
+
+var ErrLinkUnavailable = errors.New("The requested link is unavailable.")
 
 func (db *MongoDB) Create(ctx context.Context, link *link.Link) error {
 	now := time.Now()
@@ -22,9 +25,9 @@ func (db *MongoDB) GetBySlug(ctx context.Context, slug string) (*link.Link, erro
 	if err != nil {
 		return nil, err
 	}
-	err = link.Validate(&result)
-	if err != nil {
-		return nil, err
+	available := result.IsAvailable()
+	if !available {
+		return nil, ErrLinkUnavailable
 	}
 	return &result, nil
 }

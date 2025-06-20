@@ -24,3 +24,21 @@ type Link struct {
 	PasswordHash  *string            `bson:"password_hash,omitempty"` // Optional password hash for access
 	SchemaVersion int                `bson:"schema_version"`          // Schema version for migration
 }
+
+func (lnk *Link) IsAvailable() bool {
+	now := time.Now()
+
+	if lnk.MaxHits != nil && lnk.HitCount >= *lnk.MaxHits {
+		return false
+	}
+
+	if lnk.ValidFrom != nil && now.Before(*lnk.ValidFrom) {
+		return false
+	}
+
+	if now.After(lnk.ExpiresAt) {
+		return false
+	}
+
+	return true
+}

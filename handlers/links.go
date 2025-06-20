@@ -24,7 +24,7 @@ func Links(repo link.Repository) http.HandlerFunc {
 			return
 		}
 
-		lnk, err := link.NewFromForm(r.PostForm)
+		lnk, err := link.FromForm(r.PostForm)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
