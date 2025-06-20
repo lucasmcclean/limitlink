@@ -5,33 +5,26 @@ import (
 	"math/big"
 )
 
-type slugCharset int
 const (
-	alphanumeric slugCharset = iota
-	letters
-	numbers
-)
+	minSlugLen = 6
+	maxSlugLen = 12
 
-const (
 	lettersCharset      = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	numericCharset      = "0123456789"
 	alphanumericCharset = lettersCharset + numericCharset
 )
 
-const (
-	minSlugLen     = 6
-	maxSlugLen     = 12
-	defaultSlugLen = 7
-)
-
-func generateSlug(length int, charset slugCharset) (string, error) {
+// generateSlug creates a cryptographically secure random string (slug) of the specified length,
+// using the specified charset: "letters", "numbers", or "alphanumeric".
+// If charset is empty or unrecognized, "alphanumeric" is used by default.
+func generateSlug(length int, charset string) (string, error) {
 	var chars string
 	switch charset {
-	case letters:
+	case "letters":
 		chars = lettersCharset
-	case numbers:
+	case "numbers":
 		chars = numericCharset
-	case alphanumeric:
+	case "alphanumeric":
 		chars = alphanumericCharset
 	default:
 		chars = alphanumericCharset
@@ -49,4 +42,3 @@ func generateSlug(length int, charset slugCharset) (string, error) {
 
 	return string(slug), nil
 }
-
