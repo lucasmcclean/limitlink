@@ -49,6 +49,12 @@ or, for production, run:
   --content "./assets/templates/**/*.html,./assets/static/html/**/*.html"
 ```
 
+## AI Usage
+
+I've used AI tools to assist with focused refactoring and documentation
+generation. All AI-generated contributions have been reviewed to ensure quality
+and accuracy.
+
 ## License
 
 This project is licensed under the MIT License. You’re free to use,
