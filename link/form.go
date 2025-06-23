@@ -17,12 +17,12 @@ const schemaVersion int = 1
 // Field names for form input keys.
 const (
 	fieldTarget      = "target"
-	fieldExpiresIn   = "expires_in"
-	fieldExpiresAt   = "expires_at"
-	fieldValidFrom   = "valid_from"
-	fieldMaxHits     = "max_hits"
-	fieldSlugLength  = "slug_length"
-	fieldSlugCharset = "slug_charset"
+	fieldExpiresIn   = "expires-in"
+	fieldExpiresAt   = "expires-at"
+	fieldValidFrom   = "valid-from"
+	fieldMaxHits     = "max-hits"
+	fieldSlugLength  = "slug-length"
+	fieldSlugCharset = "slug-charset"
 	fieldPassword    = "password"
 )
 
