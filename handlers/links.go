@@ -10,7 +10,7 @@ import (
 )
 
 func Links(repo link.Repository) http.HandlerFunc {
-	tmpl := template.Must(template.ParseFS(assets.TemplateFS(), "new-link.html"))
+	tmpl := template.Must(template.ParseFS(assets.TemplateFS(), "link-info.partial.html"))
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {

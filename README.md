@@ -38,15 +38,17 @@ version updated should it change in the future. More details can be found on
 Once you have Tailwind installed, you can run it with:
 
 ```bash
-./tailwindcss -i ./tailwind.css -o ./assets/static/css/tailwind.css --watch \
-  --content "./assets/templates/**/*.html,./assets/static/html/**/*.html"
+./tailwindcss -i ./assets/css/tailwind.css \
+    -o ./assets/static/css/tailwind.css --watch \
+    --content "./assets/templates/**/*.html,./assets/static/html/**/*.html"
 ```
 
 or, for production, run:
 
 ```bash
-./tailwindcss -i ./tailwind.css -o ./assets/static/css/tailwind.css --minify \
-  --content "./assets/templates/**/*.html,./assets/static/html/**/*.html"
+./tailwindcss -i ./assets/css/tailwind.css \
+    -o ./assets/static/css/tailwind.css --minify \
+    --content "./assets/templates/**/*.html,./assets/static/html/**/*.html"
 ```
 
 ## AI Usage
