@@ -1,22 +1,29 @@
 {{ define "new-link" }}
-<div
-  class="max-w-xl mx-auto bg-surface p-6 rounded-2xl shadow-lg border border-secondary/30 space-y-4 mt-10"
->
+<div class="w-full max-w-2xl p-8 flex flex-col gap-4 text-lg">
   <h2 class="text-3xl font-bold text-text">Link Created!</h2>
   <p>
-    <b class="text-accent">Slug:</b>
-    <a href="/{{ .Slug }}" class="text-secondary underline hover:opacity-80"
-      >/{{ .Slug }}</a
-    >
+    Your secure link has been created! You can share the public link below with
+    others, but keep the admin link private; it gives you access to edit or
+    delete this link later.
   </p>
-  <p><b class="text-accent">Target:</b> {{ .Target }}</p>
   <p>
-    <b class="text-accent">Admin Link:</b>
+    <b>New Link:</b>
     <a
-      href="https://limitl.ink/admin/{{ .AdminToken }}"
+      href="/{{ .Slug }}"
+      target="_blank"
       class="text-secondary underline hover:opacity-80"
-      >https://limitl.ink/admin/{{ .AdminToken }}</a
+      >LimitL.ink/{{ .Slug }}</a
     >
   </p>
+  <p>
+    <b>Manage Link:</b>
+    <a
+      href="/admin/{{ .AdminToken }}"
+      class="text-secondary underline hover:opacity-80"
+      >LimitL.ink/admin/{{ .AdminToken }}</a
+    >
+  </p>
+  <div class="w-full h-px bg-text"></div>
+  <p><b>Destination URL:</b> {{ .Target }}</p>
 </div>
 {{ end }}
