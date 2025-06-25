@@ -1,11 +1,16 @@
-{{ define "new-link" }}
+{{ define "new-link" }} {{/* new-link expects a Link with all times represented
+in the RFC3339 format. It also expects the housing document to have access to
+AlpineJS. */}}
+
 <div class="w-full max-w-2xl p-8 flex flex-col gap-4 text-lg">
   <h2 class="text-3xl font-bold text-text">Link Created!</h2>
+
   <p>
     Your secure link has been created! You can share the public link below with
     others, but keep the admin link private; it gives you access to edit or
     delete this link later.
   </p>
+
   <p>
     <b>New Link:</b>
     <a
@@ -15,6 +20,7 @@
       >LimitL.ink/{{ .Slug }}</a
     >
   </p>
+
   <p>
     <b>Manage Link:</b>
     <a
@@ -24,6 +30,51 @@
     >
   </p>
   <div class="w-full h-px bg-text"></div>
+
   <p><b>Destination URL:</b> {{ .Target }}</p>
+
+  {{ if .ValidFrom }}
+  <p>
+    <b>Becomes Valid On:</b>
+    <span
+      x-data
+      x-init="
+      $el.textContent = new Date('{{ .ValidFrom }}').toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: 'short'
+      })
+    "
+      title="{{ .ValidFrom }}"
+    ></span>
+  </p>
+  {{ end }}
+
+  <p>
+    <b>Expires On:</b>
+    <span
+      x-data
+      x-init="
+      $el.textContent = new Date('{{ .ExpiresAt }}').toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: 'short'
+      })
+    "
+      title="{{ .ExpiresAt }}"
+    ></span>
+  </p>
+
+  {{ if .MaxHits }}
+  <p><b>Max Number of Uses:</b> {{ .MaxHits }}</p>
+  {{ end }}
 </div>
 {{ end }}
