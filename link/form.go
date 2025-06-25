@@ -91,7 +91,7 @@ func FromForm(form url.Values) (*Link, error) {
 // or "expires_at" (an RFC3339 timestamp). Prefers "expires_in" if both are provided.
 func extractExpiresAtOrIn(form url.Values, now time.Time) (time.Time, error) {
 	value := getValue(fieldExpiresIn, form)
-	if value != "" {
+	if value != "custom" {
 		days, err := strconv.Atoi(value)
 		if err != nil || days <= 0 {
 			return time.Time{}, errors.New("Expiration (in days) must be a whole number greater than 0.")
