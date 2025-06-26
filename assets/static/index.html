@@ -12,7 +12,7 @@
   </head>
 
   <body>
-    <header class="w-9/10 mx-auto my-16 flex items-center justify-evenly">
+    <header class="h-screen w-9/10 mx-auto flex items-center justify-evenly">
       <div class="w-fit flex flex-col justify-center gap-4">
         <h1
           class="text-6xl sm:text-7xl md:text-8xl font-display font-extrabold tracking-normal"
@@ -41,14 +41,12 @@
           </a>
         </div>
       </div>
-      <div
-        class="hidden sm:block h-full w-1/4 flex items-center justify-center"
-      >
+      <div class="hidden sm:block h-fit w-1/4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
           viewBox="0 0 63.43792 63.601873"
-          class="h-auto w-full mx-auto hover:scale-105 transition-transform"
+          class="h-auto w-full hover:scale-105 transition-transform"
           aria-hidden="true"
         >
           <defs>
@@ -90,7 +88,7 @@
     <main>
       <section
         id="new-link"
-        class="h-fit w-full my-16 flex flex-col justify-center items-center"
+        class="w-full mb-32 flex flex-col justify-center items-center"
       >
         <form
           x-data="linkForm()"

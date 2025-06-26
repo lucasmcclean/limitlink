@@ -5,31 +5,53 @@ AlpineJS. */}}
 <div class="w-full max-w-2xl p-8 flex flex-col gap-4 text-lg">
   <h2 class="text-3xl font-bold text-text">Link Created!</h2>
 
-  <p>
-    Your secure link has been created! You can share the public link below with
-    others, but keep the admin link private; it gives you access to edit or
-    delete this link later.
-  </p>
-
-  <p>
-    <b>New Link:</b>
-    <a
-      href="/{{ .Slug }}"
-      target="_blank"
-      class="text-secondary underline hover:opacity-80"
-      >LimitL.ink/{{ .Slug }}</a
+  <a
+    href="/{{ .Slug }}"
+    x-data="{ copied: false }"
+    @click.prevent="
+        navigator.clipboard.writeText($el.href).then(() => copied = true);
+        setTimeout(() => copied = false, 1500);"
+    class="font-bold"
+    :title="copied ? 'Copied!' : 'Click to copy link'"
+  >
+    LimitL.ink/{{ .Slug }}
+    <span x-show="!copied" class="px-2 text-text font-normal opacity-70"
+      >(Click to copy)</span
     >
+    <span x-show="copied" class="text-text font-normal opacity-70"
+      >Copied!</span
+    >
+  </a>
+
+  <p>
+    You can share your new link with others, but keep the admin link private; it
+    gives you access to edit or delete this link later.
   </p>
 
   <p>
-    <b>Manage Link:</b>
+    <b class="block"
+      >Your Admin Link
+      <span class="font-normal opacity-70">(Keep this private)</span>:</b
+    >
+    <a></a>
     <a
       href="/admin/{{ .AdminToken }}"
-      class="text-secondary underline hover:opacity-80"
-      >LimitL.ink/admin/{{ .AdminToken }}</a
+      x-data="{ copied: false }"
+      @click.prevent="
+        navigator.clipboard.writeText($el.href).then(() => copied = true);
+        setTimeout(() => copied = false, 1500);"
+      class="font-bold"
+      :title="copied ? 'Copied!' : 'Click to copy link'"
     >
+      LimitL.ink/admin/{{ .AdminToken }}
+      <span x-show="!copied" class="px-2 font-normal text-text opacity-70"
+        >(Click to copy)</span
+      >
+      <span x-show="copied" class="text-text font-normal opacity-70"
+        >Copied!</span
+      >
+    </a>
   </p>
-  <div class="w-full h-px bg-text"></div>
 
   <p><b>Destination URL:</b> {{ .Target }}</p>
 
