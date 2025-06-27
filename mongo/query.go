@@ -52,12 +52,46 @@ func (db *MongoDB) DeleteByToken(ctx context.Context, token string) error {
 	return err
 }
 
-func (db *MongoDB) UpdateByToken(ctx context.Context, token string, updated *link.Link) error {
-	updated.UpdatedAt = time.Now()
-	_, err := db.collection.UpdateOne(
-		ctx,
-		bson.M{"admin_token": token},
-		bson.M{"$set": updated},
-	)
+func (db *MongoDB) PatchByToken(ctx context.Context, token string, patch *link.PatchLink) error {
+	setFields := bson.M{
+		"updated_at": patch.UpdatedAt,
+	}
+	unsetFields := bson.M{}
+
+	if patch.ExpiresAt != nil {
+		setFields["expires_at"] = *patch.ExpiresAt
+	}
+
+	if patch.MaxHits.Remove {
+		unsetFields["max_hits"] = ""
+	} else if patch.MaxHits.Value != nil {
+		setFields["max_hits"] = *patch.MaxHits.Value
+	}
+
+	if patch.ValidFrom.Remove {
+		unsetFields["valid_from"] = ""
+	} else if patch.ValidFrom.Value != nil {
+		setFields["valid_from"] = *patch.ValidFrom.Value
+	}
+
+	if patch.PasswordHash.Remove {
+		unsetFields["password_hash"] = ""
+	} else if patch.PasswordHash.Value != nil {
+		setFields["password_hash"] = *patch.PasswordHash.Value
+	}
+
+	updateDoc := bson.M{}
+	if len(setFields) > 0 {
+		updateDoc["$set"] = setFields
+	}
+	if len(unsetFields) > 0 {
+		updateDoc["$unset"] = unsetFields
+	}
+
+	if len(updateDoc) == 0 {
+		return nil
+	}
+
+	_, err := db.collection.UpdateOne(ctx, bson.M{"admin_token": token}, updateDoc)
 	return err
 }

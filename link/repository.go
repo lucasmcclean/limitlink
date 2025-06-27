@@ -24,6 +24,6 @@ type Repository interface {
 	// DeleteByToken removes a link identified by its admin token.
 	DeleteByToken(ctx context.Context, adminToken string) error
 
-	// UpdateByToken updates a link using its admin token as an identifier.
-	UpdateByToken(ctx context.Context, adminToken string, updated *Link) error
+	// PatchByToken updates a link using its admin token as an identifier.
+	PatchByToken(ctx context.Context, adminToken string, updated *PatchLink) error
 }
