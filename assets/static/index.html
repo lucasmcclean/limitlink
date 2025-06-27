@@ -97,22 +97,24 @@
           hx-target="#new-link"
           hx-swap="innerHTML"
           class="w-full max-w-2xl p-8 flex flex-col gap-4"
+          aria-labelledby="form-heading"
         >
-          <h3 class="text-3xl font-bold text-text">Create a New Link</h3>
+          <h3 id="form-heading" class="text-3xl font-bold text-text">
+            Create a New Link
+          </h3>
 
           <!-- Error Placeholder -->
           <div
             id="form-error"
             tabindex="-1"
             class="hidden text-error"
+            role="alert"
             aria-live="polite"
           ></div>
 
           <!-- Target URL -->
           <div>
-            <label for="target" class="block text-lg text-text mb-1">
-              Target URL:
-            </label>
+            <label for="target" class="block text-lg mb-1">Target URL:</label>
             <input
               type="url"
               id="target"
@@ -121,18 +123,26 @@
               :class="errors.target ? 'border-error' : 'border-text'"
               class="w-full px-4 py-2 border rounded-lg"
               required
+              :aria-invalid="!!errors.target"
+              :aria-describedby="errors.target ? 'target-error' : null"
             />
-            <p x-show="errors.target" class="font-semibold mt-1">
-              <span class="text-error">⚠</span>
+            <p
+              id="target-error"
+              x-show="errors.target"
+              x-cloak
+              class="font-semibold mt-1"
+              role="alert"
+            >
+              <span aria-hidden="true">⚠</span>
               <span x-text="errors.target"></span>
             </p>
           </div>
 
           <!-- Expiry Selection -->
           <div>
-            <label for="expires-in" class="block text-lg text-text mb-1">
-              Expires In:
-            </label>
+            <label for="expires-in" class="block text-lg mb-1"
+              >Expires In:</label
+            >
             <select
               id="expires-in"
               name="expires-in"
@@ -147,23 +157,35 @@
           </div>
 
           <!-- Custom Expiry -->
-          <div id="expires-custom-container" x-show="expiry === 'custom'">
-            <label for="expires-at" class="block text-lg text-text mb-1">
-              Custom Expiry:
-            </label>
+          <div
+            id="expires-custom-container"
+            x-show="expiry === 'custom'"
+            x-cloak
+            :aria-hidden="expiry !== 'custom'"
+          >
+            <label for="expires-at-display" class="block text-lg mb-1"
+              >Custom Expiry:</label
+            >
             <input
               type="datetime-local"
               id="expires-at-display"
               name="expires-at-display"
               :class="errors.expiresAt ? 'border-error' : 'border-text'"
               class="w-full px-4 py-2 border rounded-lg"
+              :aria-invalid="!!errors.expiresAt"
+              :aria-describedby="errors.expiresAt ? 'expires-at-error' : null"
             />
-            <p x-show="errors.expiresAt" class="font-semibold mt-1">
-              <span class="text-error">⚠</span>
+            <p
+              id="expires-at-error"
+              x-show="errors.expiresAt"
+              x-cloak
+              class="font-semibold mt-1"
+              role="alert"
+            >
+              <span aria-hidden="true">⚠</span>
               <span x-text="errors.expiresAt"></span>
             </p>
 
-            <!-- hidden ISO value for backend -->
             <input type="hidden" id="expires-at" name="expires-at" disabled />
           </div>
 
@@ -174,6 +196,8 @@
               id="toggle-advanced"
               @click="showAdvanced = !showAdvanced"
               class="text-accent hover:underline"
+              :aria-expanded="showAdvanced.toString()"
+              aria-controls="advanced-options"
             >
               <template x-if="showAdvanced"
                 ><p>Hide Advanced Options</p></template
@@ -185,10 +209,16 @@
           </div>
 
           <!-- Advanced Options -->
-          <div x-show="showAdvanced" class="flex flex-col gap-4">
+          <div
+            id="advanced-options"
+            x-show="showAdvanced"
+            x-cloak
+            class="flex flex-col gap-4"
+            :aria-hidden="!showAdvanced"
+          >
             <!-- Max Hits -->
             <div>
-              <label for="max-hits" class="block text-lg text-text mb-1">
+              <label for="max-hits" class="block text-lg mb-1">
                 Max Hits
                 <span class="font-semibold opacity-60">(optional)</span>:
               </label>
@@ -200,19 +230,24 @@
                 placeholder="Unlimited"
                 :class="errors.maxHits ? 'border-error' : 'border-text'"
                 class="w-full px-4 py-2 border rounded-lg"
+                :aria-invalid="!!errors.maxHits"
+                :aria-describedby="errors.maxHits ? 'max-hits-error' : null"
               />
-              <p x-show="errors.maxHits" class="font-semibold mt-1">
-                <span class="text-error">⚠</span>
+              <p
+                id="max-hits-error"
+                x-show="errors.maxHits"
+                x-cloak
+                class="font-semibold mt-1"
+                role="alert"
+              >
+                <span aria-hidden="true">⚠</span>
                 <span x-text="errors.maxHits"></span>
               </p>
             </div>
 
             <!-- Valid From -->
             <div>
-              <label
-                for="valid-from-display"
-                class="block text-lg text-text mb-1"
-              >
+              <label for="valid-from-display" class="block text-lg mb-1">
                 Valid From
                 <span class="font-semibold opacity-60">(optional)</span>:
               </label>
@@ -222,19 +257,26 @@
                 name="valid-from-display"
                 :class="errors.validFrom ? 'border-error' : 'border-text'"
                 class="w-full px-4 py-2 border rounded-lg"
+                :aria-invalid="!!errors.validFrom"
+                :aria-describedby="errors.validFrom ? 'valid-from-error' : null"
               />
-              <p x-show="errors.validFrom" class="font-semibold mt-1">
-                <span class="text-error">⚠</span>
+              <p
+                id="valid-from-error"
+                x-show="errors.validFrom"
+                x-cloak
+                class="font-semibold mt-1"
+                role="alert"
+              >
+                <span aria-hidden="true">⚠</span>
                 <span x-text="errors.validFrom"></span>
               </p>
 
-              <!-- hidden ISO value for backend -->
               <input type="hidden" id="valid-from" name="valid-from" disabled />
             </div>
 
             <!-- Password -->
             <div>
-              <label for="password" class="block text-lg text-text mb-1">
+              <label for="password" class="block text-lg mb-1">
                 Password
                 <span class="font-semibold opacity-60">(optional)</span>:
               </label>
@@ -249,7 +291,7 @@
 
             <!-- Slug Length -->
             <div>
-              <label for="slug-length" class="block text-lg text-text mb-1">
+              <label for="slug-length" class="block text-lg mb-1">
                 Slug Length
                 <span class="font-semibold opacity-60">(default: 7)</span>:
               </label>
@@ -262,9 +304,17 @@
                 placeholder="7"
                 :class="errors.slugLength ? 'border-error' : 'border-text'"
                 class="w-full px-4 py-2 border rounded-lg"
+                :aria-invalid="!!errors.slugLength"
+                :aria-describedby="errors.slugLength ? 'slug-length-error' : null"
               />
-              <p x-show="errors.slugLength" class="font-semibold mt-1">
-                <span class="text-error">⚠</span>
+              <p
+                id="slug-length-error"
+                x-show="errors.slugLength"
+                x-cloak
+                class="font-semibold mt-1"
+                role="alert"
+              >
+                <span aria-hidden="true">⚠</span>
                 <span x-text="errors.slugLength"></span>
               </p>
             </div>
@@ -289,7 +339,6 @@
             </div>
           </div>
 
-          <!-- Submit -->
           <div>
             <button
               type="submit"
