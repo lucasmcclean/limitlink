@@ -27,7 +27,7 @@ func Admin(repo link.Repository) http.HandlerFunc {
 		}
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		err = tmpl.Execute(w, lnk)
+		err = tmpl.Execute(w, lnk.IntoDisplay())
 		if err != nil {
 			log.Printf("template render error: %v", err)
 			http.Error(w, "failed to render template", http.StatusInternalServerError)

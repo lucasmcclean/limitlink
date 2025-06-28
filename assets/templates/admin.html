@@ -11,43 +11,100 @@
     <script defer src="/static/js/alpine.min.js"></script>
   </head>
 
-  <body class="min-h-screen bg-background text-text font-sans px-6 py-10">
-    <div
-      class="max-w-2xl mx-auto bg-surface p-8 rounded-2xl shadow-lg border border-accent/20 space-y-10"
-    >
-      <h1 class="text-4xl font-display font-extrabold tracking-tight">
+  <body>
+    <div class="min-h-screen max-w-2xl mx-auto my-16">
+      <h1
+        class="w-fit mb-8 mx-auto px-4 text-3xl sm:text-5xl font-display font-extrabold tracking-tight"
+      >
         LimitL<span class="opacity-50">.</span>ink Admin Panel
       </h1>
 
-      <div class="space-y-2 text-lg">
-        <p>
-          <span class="font-semibold text-accent">Created at:</span> {{
-          .CreatedAt }}
+      <div class="w-9/10 h-1 mb-4 mx-auto bg-accent"></div>
+      <div class="w-fit sm:min-w-xl mx-auto px-4 space-y-2 text-lg">
+        <h2 class="text-2xl font-bold text-text my-4">Link Info</h2>
+        <p class="flex flex-wrap">
+          <span class="w-full font-semibold mx-auto sm:flex-1"
+            >Created at:</span
+          >
+          <span
+            x-data
+            x-init="
+            $el.textContent = new Date('{{ .CreatedAt }}').toLocaleString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+              timeZoneName: 'short'
+            })"
+            title="{{ .CreatedAt }}"
+          ></span>
         </p>
-        <p>
-          <span class="font-semibold text-accent">Expires at:</span> {{
-          .ExpiresAt }}
+        <p class="flex flex-wrap">
+          <span class="w-full font-semibold sm:flex-1">Expires at:</span>
+          <span
+            x-data
+            x-init="
+            $el.textContent = new Date('{{ .ExpiresAt }}').toLocaleString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+              timeZoneName: 'short'
+            })"
+            title="{{ .ExpiresAt }}"
+          ></span>
         </p>
-        <p>
-          <span class="font-semibold text-accent">Last updated:</span> {{
-          .UpdatedAt }}
+        <p class="flex flex-wrap">
+          <span class="w-full font-semibold sm:flex-1">Last updated:</span>
+          <span
+            x-data
+            x-init="
+            $el.textContent = new Date('{{ .UpdatedAt }}').toLocaleString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+              timeZoneName: 'short'
+            })"
+            title="{{ .UpdatedAt }}"
+          ></span>
         </p>
-        <p>
-          <span class="font-semibold text-accent">Number of hits:</span> {{
-          .HitCount }}
+        <p class="flex flex-wrap">
+          <span class="w-full font-semibold sm:flex-1">Number of hits:</span>
+          {{ .HitCount }}
         </p>
         {{ if .MaxHits }}
-        <p>
-          <span class="font-semibold text-accent">Max hits:</span> {{ .MaxHits
-          }}
+        <p class="flex flex-wrap w-full">
+          <span class="w-full font-semibold sm:flex-1">Max hits:</span>
+          {{ .MaxHits }}
         </p>
         {{ end }} {{ if .ValidFrom }}
-        <p>
-          <span class="font-semibold text-accent">Valid from:</span> {{
-          .ValidFrom }}
+        <p class="flex flex-wrap">
+          <span class="w-full font-semibold sm:flex-1">Valid from:</span>
+          <span
+            x-data
+            x-init="
+            $el.textContent = new Date('{{ .ValidFrom }}').toLocaleString(undefined, {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+              timeZoneName: 'short'
+            })"
+            title="{{ .ValidFrom }}"
+          ></span>
         </p>
         {{ end }}
       </div>
+      <div class="w-9/10 h-1 mt-4 mx-auto bg-accent"></div>
 
       <form
         x-data="linkForm()"
@@ -55,7 +112,7 @@
         hx-patch="/links"
         hx-target="#form-message"
         hx-swap="innerHTML"
-        class="flex flex-col gap-4"
+        class="w-full px-8 mt-8 flex flex-col gap-4"
       >
         <h2 class="text-2xl font-bold text-text mt-4">Update Link Settings</h2>
 
@@ -170,6 +227,14 @@
           Update Link
         </button>
       </form>
+
+      <footer class="w-full px-8 sm:px-16 py-8 flex flex-wrap justify-between">
+        <p class="opacity-70">
+          &copy; 2025 Lucas McClean &mdash; LimitLink&trade;
+        </p>
+
+        <p class="font-display text-accent tracking-widest">//LM</p>
+      </footer>
     </div>
 
     <script>
