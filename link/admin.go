@@ -5,8 +5,10 @@ import (
 	"math/big"
 )
 
-const adminTokenLen  = 22
+const adminTokenLen = 22
 
+// generateAdminToken returns a securely generated random alphanumeric string.
+// The token is used as an admin secret and uses crypto/rand for secure randomness.
 func generateAdminToken() (string, error) {
 	token := make([]byte, adminTokenLen)
 

@@ -8,8 +8,10 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func (db *MongoDB) scheduleLinksCleanup(ctx context.Context, interval time.Duration) {
-	ticker := time.NewTicker(interval)
+const cleanupInterval = time.Second * 10
+
+func (db *MongoDB) scheduleLinksCleanup(ctx context.Context) {
+	ticker := time.NewTicker(cleanupInterval)
 
 	go func() {
 		for range ticker.C {

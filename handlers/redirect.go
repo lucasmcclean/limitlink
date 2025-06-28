@@ -1,17 +1,16 @@
 package handlers
 
 import (
-	"context"
 	"html/template"
-	"io/fs"
 	"net/http"
 	"strings"
 
+	"github.com/lucasmcclean/limitlink/assets"
 	"github.com/lucasmcclean/limitlink/link"
 )
 
-func Redirect(ctx context.Context, repo link.Repository, templatesFS fs.FS) http.HandlerFunc {
-	tmpl := template.Must(template.ParseFS(templatesFS, "password.html"))
+func Redirect(repo link.Repository) http.HandlerFunc {
+	tmpl := template.Must(template.ParseFS(assets.TemplateFS(), "password.html"))
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := strings.TrimPrefix(r.URL.Path, "/")
@@ -20,7 +19,7 @@ func Redirect(ctx context.Context, repo link.Repository, templatesFS fs.FS) http
 			return
 		}
 
-		lnk, err := repo.GetBySlug(ctx, slug)
+		lnk, err := repo.GetBySlug(r.Context(), slug)
 		if err != nil {
 			http.Error(w, "link not found", http.StatusNotFound)
 			return
@@ -29,7 +28,7 @@ func Redirect(ctx context.Context, repo link.Repository, templatesFS fs.FS) http
 		if lnk.PasswordHash != nil {
 			switch r.Method {
 			case http.MethodGet:
-				repo.IncBySlug(ctx, slug)
+				repo.IncBySlug(r.Context(), slug)
 				tmpl.Execute(w, lnk)
 				return
 
@@ -41,7 +40,7 @@ func Redirect(ctx context.Context, repo link.Repository, templatesFS fs.FS) http
 				}
 
 				password := r.FormValue("password")
-				valid, err := link.VerifyPassword(*lnk.PasswordHash, password) 
+				valid, err := link.VerifyPassword(*lnk.PasswordHash, password)
 				if !valid {
 					http.Error(w, "invalid password", http.StatusUnauthorized)
 					return
@@ -58,7 +57,7 @@ func Redirect(ctx context.Context, repo link.Repository, templatesFS fs.FS) http
 			http.Error(w, "invalid target", http.StatusInternalServerError)
 		}
 
-		repo.IncBySlug(ctx, slug)
+		repo.IncBySlug(r.Context(), slug)
 		http.Redirect(w, r, target, http.StatusFound)
 	}
 }

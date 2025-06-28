@@ -3,6 +3,10 @@ services:
     build: .
     container_name: limitlink
     restart: unless-stopped
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - MONGO_DB_NAME=${MONGO_DB_NAME}
+      - MONGO_COLLECTION=${MONGO_COLLECTION}
     depends_on:
       mongo:
         condition: service_healthy

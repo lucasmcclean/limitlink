@@ -1,0 +1,149 @@
+{{ define "new-link" }} {{/* new-link expects a Link with all times represented
+in the RFC3339 format. It also expects the housing document to have access to
+AlpineJS. */}}
+
+<div
+  x-data="{ showConfirm: false }"
+  class="w-full max-w-2xl p-8 flex flex-col gap-4 text-lg"
+>
+  <h2 class="text-3xl font-bold text-text">Link Created!</h2>
+
+  <a
+    href="/{{ .Slug }}"
+    x-data="{ copied: false }"
+    @click.prevent="
+        navigator.clipboard.writeText($el.href).then(() => copied = true);
+        setTimeout(() => copied = false, 1500);"
+    class="font-bold"
+    :title="copied ? 'Copied!' : 'Click to copy link'"
+  >
+    LimitL.ink/{{ .Slug }}
+    <span x-show="!copied" class="px-2 text-text font-normal opacity-70"
+      >(Click to copy)</span
+    >
+    <span x-show="copied" class="text-text font-normal opacity-70"
+      >Copied!</span
+    >
+  </a>
+
+  <p>
+    You can share your new link with others, but keep the admin link private; it
+    gives you access to edit or delete this link later.
+  </p>
+
+  <p>
+    <b class="block"
+      >Your Admin Link
+      <span class="font-normal opacity-70">(Keep this private)</span>:</b
+    >
+    <a></a>
+    <a
+      href="/admin/{{ .AdminToken }}"
+      x-data="{ copied: false }"
+      @click.prevent="
+        navigator.clipboard.writeText($el.href).then(() => copied = true);
+        setTimeout(() => copied = false, 1500);"
+      class="font-bold"
+      :title="copied ? 'Copied!' : 'Click to copy link'"
+    >
+      LimitL.ink/admin/{{ .AdminToken }}
+      <span x-show="!copied" class="px-2 font-normal text-text opacity-70"
+        >(Click to copy)</span
+      >
+      <span x-show="copied" class="text-text font-normal opacity-70"
+        >Copied!</span
+      >
+    </a>
+  </p>
+
+  <p><b>Destination URL:</b> {{ .Target }}</p>
+
+  {{ if .ValidFrom }}
+  <p>
+    <b>Becomes Valid On:</b>
+    <span
+      x-data
+      x-init="
+      $el.textContent = new Date('{{ .ValidFrom }}').toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: 'short'
+      })"
+      title="{{ .ValidFrom }}"
+    ></span>
+  </p>
+  {{ end }}
+
+  <p>
+    <b>Expires On:</b>
+    <span
+      x-data
+      x-init="
+      $el.textContent = new Date('{{ .ExpiresAt }}').toLocaleString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZoneName: 'short'
+      })"
+      title="{{ .ExpiresAt }}"
+    ></span>
+  </p>
+
+  {{ if .MaxHits }}
+  <p><b>Max Number of Uses:</b> {{ .MaxHits }}</p>
+  {{ end }}
+
+  <button
+    @click="showConfirm = true"
+    class="w-full bg-accent my-4 py-2 px-6 text-text rounded-xl hover:bg-opacity-80 transition-colors"
+  >
+    Create Another Link
+  </button>
+
+  <div
+    x-show="showConfirm"
+    x-cloak
+    @keydown.escape.window="showConfirm = false"
+    x-init="$nextTick(() => { $el.focus() })"
+    tabindex="-1"
+    role="dialog"
+    aria-modal="true"
+    aria-describedby="confirm-desc"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+  >
+    <div class="w-4/5 max-w-md p-8 bg-surface rounded-xl">
+      <h3 class="text-xl font-bold mb-4">Are you sure?</h3>
+      <p id="confirm-desc" class="mb-8">
+        Please make sure you've saved your new link and your admin link. You
+        won’t be able to access them again.
+      </p>
+      <div class="flex justify-end gap-3">
+        <button
+          :disabled="!showConfirm"
+          @click="showConfirm = false"
+          class="px-4 py-2 bg-accent rounded-lg hover:opacity-80"
+        >
+          Cancel
+        </button>
+        <button
+          :disabled="!showConfirm"
+          @click="showConfirm = false;"
+          hx-post="/static/html/link-form.partial.html"
+          hx-target="#new-link"
+          hx-swap="innerHTML"
+          class="px-4 py-2 border border-accent rounded-lg hover:bg-opacity-80"
+        >
+          Yes, Continue
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{{ end }}

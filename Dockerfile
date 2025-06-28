@@ -16,9 +16,6 @@ FROM alpine:latest
 WORKDIR /root/
 
 COPY --from=builder /app/limitlink /root/
-COPY --from=builder /app/templates /root/templates
-COPY --from=builder /app/static /root/static
-
 
 EXPOSE 8080
 

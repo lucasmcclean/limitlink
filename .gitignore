@@ -1,4 +1,6 @@
+tmp/
+
 .env
 
 tailwindcss
-static/css/tailwind.css
+assets/static/css/tailwind.css
