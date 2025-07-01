@@ -7,7 +7,7 @@ import (
 // Repository defines persistence operations for Link objects.
 type Repository interface {
 	// Create inserts a new link into the repository.
-	Create(ctx context.Context, link *Link) error
+	Create(ctx context.Context, link *Validated) error
 
 	// GetBySlug retrieves a link by its public slug.
 	GetBySlug(ctx context.Context, slug string) (*Link, error)
@@ -22,5 +22,5 @@ type Repository interface {
 	DeleteByToken(ctx context.Context, token string) error
 
 	// PatchByToken updates a link by its admin token.
-	PatchByToken(ctx context.Context, token string, updated *PatchLink) error
+	PatchByToken(ctx context.Context, token string, patch *ValidatedPatch) error
 }

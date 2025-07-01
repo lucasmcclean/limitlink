@@ -23,8 +23,8 @@ func (store *Store) Links() *Links {
 }
 
 // Create inserts a new link document into the collection.
-func (l *Links) Create(ctx context.Context, newLink *link.Link) error {
-	_, err := l.collection.InsertOne(ctx, newLink)
+func (l *Links) Create(ctx context.Context, vLink *link.Validated) error {
+	_, err := l.collection.InsertOne(ctx, vLink.Link())
 	return err
 }
 
@@ -35,6 +35,7 @@ func (l *Links) GetBySlug(ctx context.Context, slug string) (*link.Link, error) 
 	if errors.Is(err, mongo.ErrNoDocuments) {
 		return nil, nil
 	}
+	// TODO: Make sure link is publicly available
 	return &result, err
 }
 
@@ -65,7 +66,9 @@ func (l *Links) DeleteByToken(ctx context.Context, token string) error {
 }
 
 // PatchByToken updates a link document by its admin token using a PatchLink struct.
-func (l *Links) PatchByToken(ctx context.Context, token string, patch *link.PatchLink) error {
+func (l *Links) PatchByToken(ctx context.Context, token string, vPatch *link.ValidatedPatch) error {
+	patch := vPatch.Patch()
+
 	setFields := bson.M{
 		"updated_at": patch.UpdatedAt,
 	}
