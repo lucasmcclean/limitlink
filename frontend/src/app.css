@@ -1,2 +1,48 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
+
+@font-face {
+	font-family: 'Exo 2';
+	src:
+		url('/fonts/Exo2-Regular.woff2') format('woff2'),
+		url('/fonts/Exo2-Regular.woff') format('woff'),
+		url('/fonts/Exo2-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Exo 2';
+	src:
+		url('/fonts/Exo2-Italic.woff2') format('woff2'),
+		url('/fonts/Exo2-Italic.woff') format('woff'),
+		url('/fonts/Exo2-Italic.ttf') format('truetype');
+	font-weight: normal;
+	font-style: italic;
+	font-display: swap;
+}
+
+@theme {
+	--font-display: 'Exo 2', 'sans-serif';
+
+	--color-background: #141414;
+	--color-surface: #282828;
+	--color-accent: #ec4067;
+	--color-secondary: #a01a7d;
+	--color-text: #f8f8f8;
+	--color-error: #f52447;
+}
+
+html,
+body {
+	@apply bg-background text-text scroll-smooth transition-colors;
+}
+
+a {
+	@apply text-accent hover:text-secondary;
+}
+
+a:visited {
+	@apply text-secondary hover:opacity-80;
+}
