@@ -3,10 +3,13 @@ package mongo
 import (
 	"context"
 	"errors"
+	"fmt"
+	"log"
 
 	"github.com/lucasmcclean/limitlink/link"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 // Links wraps the "links" collection and implements the link.Repository
@@ -20,6 +23,25 @@ func (store *Store) Links() *Links {
 	return &Links{
 		store.db.Collection("links"),
 	}
+}
+
+// ScheduleRemoval sets up a TTL index on the "admin_expires_at" field to
+// automatically delete documents after the specified expiration time.
+func (l *Links) EnsureTTLIndex(ctx context.Context) error {
+	index := mongo.IndexModel{
+		Keys: bson.D{{Key: "admin_expires_at", Value: 1}},
+		Options: options.Index().
+			SetExpireAfterSeconds(0).
+			SetName("adminExpiresAtTTL"),
+	}
+
+	_, err := l.collection.Indexes().CreateOne(ctx, index)
+	if err != nil {
+		return fmt.Errorf("failed to create TTL index: %w", err)
+	}
+
+	log.Println("TTL index on 'admin_expires_at' ensured.")
+	return nil
 }
 
 // Create inserts a new link document into the collection.

@@ -23,7 +23,12 @@ func main() {
 		log.Fatalf("error connecting to the database: %v\n", err)
 	}
 
-	srv := server.New(store.Links())
+	links := store.Links()
+	if err := links.EnsureTTLIndex(ctx); err != nil {
+		log.Fatalf("error ensuring TTL on links: %w", err)
+	}
+
+	srv := server.New(links)
 
 	serverErr := make(chan error, 1)
 	go func() {
