@@ -19,10 +19,15 @@ type Links struct {
 }
 
 // Links returns a new Links wrapper for the store's "links" collection.
-func (store *Store) Links() *Links {
-	return &Links{
+func (store *Store) Links(ctx context.Context) (*Links, error) {
+	links := &Links{
 		store.db.Collection("links"),
 	}
+	err := links.EnsureTTLIndex(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return links, nil
 }
 
 // ScheduleRemoval sets up a TTL index on the "admin_expires_at" field to
@@ -40,7 +45,7 @@ func (l *Links) EnsureTTLIndex(ctx context.Context) error {
 		return fmt.Errorf("failed to create TTL index: %w", err)
 	}
 
-	log.Println("TTL index on 'admin_expires_at' ensured.")
+	log.Println("TTL index on 'admin_expires_at' ensured")
 	return nil
 }
 

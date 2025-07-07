@@ -6,6 +6,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// adminTokenLen is the number of characters in a generated admin token.
+const adminTokenLen = 22
+
+// schemaVersion defines the current version of the link schema.
+const schemaVersion = 1
+
 // Link represents a shortened URL with optional access controls and usage
 // limits.
 //

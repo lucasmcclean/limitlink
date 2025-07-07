@@ -23,9 +23,9 @@ func main() {
 		log.Fatalf("error connecting to the database: %v\n", err)
 	}
 
-	links := store.Links()
-	if err := links.EnsureTTLIndex(ctx); err != nil {
-		log.Fatalf("error ensuring TTL on links: %w", err)
+	links, err := store.Links(ctx)
+	if err != nil {
+		log.Fatalf("error preparing links collection: %v\n", err)
 	}
 
 	srv := server.New(links)

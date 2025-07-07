@@ -7,7 +7,15 @@ import (
 	"math/big"
 )
 
-var ErrUnrecognizedCharset = errors.New("unrecognized character set")
+var (
+	ErrUnrecognizedCharset = errors.New("unrecognized character set")
+	ErrInvalidSlugLen      = errors.New("slug length must be between 6 and 12 inclusive")
+)
+
+const (
+	minSlugLen = 6
+	maxSlugLen = 12
+)
 
 const (
 	alphanumeric = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -35,6 +43,10 @@ func generateAdminToken(length int) (string, error) {
 // generateSlug creates a cryptographically secure random string (slug) of the specified length,
 // using the specified charset: "letters", "numbers", or "alphanumeric".
 func generateSlug(length int, charset string) (string, error) {
+	if length < minSlugLen || length > maxSlugLen {
+		return "", ErrInvalidSlugLen
+	}
+
 	var chars string
 	switch charset {
 	case "letters":

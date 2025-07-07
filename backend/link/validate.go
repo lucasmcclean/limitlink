@@ -52,17 +52,6 @@ func validateExpiresAt(expiresAt time.Time, now time.Time) error {
 	return nil
 }
 
-// validateMaxHits verifies that maxHits is non-negative if specified (nil means no limit).
-func validateMaxHits(maxHits *int) error {
-	if maxHits == nil {
-		return nil
-	}
-	if *maxHits < 0 {
-		return ErrMaxHitsNegative
-	}
-	return nil
-}
-
 // validateValidFrom ensures the start time is at least 1 minute in the future and
 // no more than 30 days ahead from 'now'.
 func validateValidFrom(validFrom *time.Time, now time.Time) error {
@@ -85,6 +74,17 @@ func validateTimes(validFrom *time.Time, expiresAt, adminExpiresAt time.Time) er
 	}
 	if adminExpiresAt.Before(expiresAt) {
 		return ErrAdminExpiresBeforeExpires
+	}
+	return nil
+}
+
+// validateMaxHits verifies that maxHits is non-negative if specified (nil means no limit).
+func validateMaxHits(maxHits *int) error {
+	if maxHits == nil {
+		return nil
+	}
+	if *maxHits < 0 {
+		return ErrMaxHitsNegative
 	}
 	return nil
 }
