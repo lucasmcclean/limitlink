@@ -49,7 +49,8 @@ func main() {
 		}
 
 	case err := <-serverErr:
-		shutdownCtx, _ := context.WithTimeout(ctx, 1*time.Second)
+		shutdownCtx, cancelShutdown := context.WithTimeout(ctx, 1*time.Second)
+		defer cancelShutdown()
 
 		closeErr := store.Close(shutdownCtx)
 		if closeErr != nil {
