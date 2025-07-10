@@ -9,12 +9,6 @@ import (
 	"time"
 )
 
-var (
-	ErrMissingRequiredFields = errors.New("missing one or more required fields: target, slug-length, slug-charset")
-	ErrErrorHashingPassword  = errors.New("error hashing password")
-	ErrAdminExpiresAtUpdate  = errors.New("admin_expires_at can only be updated if expires_at is also updated")
-)
-
 // Form field names expected in POST input
 const (
 	FormTarget      = "target"       // Required: the destination URL
@@ -124,7 +118,6 @@ func FromForm(form url.Values, now time.Time) (*Validated, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid slug-length: %w", err)
 	}
-
 	slug, err := generateSlug(slugLen, strings.ToLower(slugCharset))
 	if err != nil {
 		return nil, fmt.Errorf("error generating slug: %w", err)
