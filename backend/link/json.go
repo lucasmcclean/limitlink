@@ -10,10 +10,7 @@ import (
 	"time"
 )
 
-var (
-	ErrMissingRequiredFields = errors.New("missing one or more required fields: target, slug-length, slug-charset")
-	ErrErrorHashingPassword  = errors.New("error hashing password")
-)
+var ErrMissingRequiredFields = errors.New("missing one or more required fields: target, slug-length, slug-charset")
 
 // rawJSONInput represents the expected structure of JSON input for creating a new link.
 type rawJSONInput struct {
@@ -43,15 +40,6 @@ func FromJSON(r io.Reader, now time.Time) (*Validated, error) {
 
 	if input.Target == "" || input.SlugLength == "" || input.SlugCharset == "" {
 		return nil, ErrMissingRequiredFields
-	}
-
-	var passwordHash *string
-	if input.Password != nil && *input.Password != "" {
-		hashed, err := hashPassword(*input.Password)
-		if err != nil {
-			return nil, fmt.Errorf("%w: %v", ErrErrorHashingPassword, err)
-		}
-		passwordHash = &hashed
 	}
 
 	var expiresAt time.Time
@@ -96,7 +84,7 @@ func FromJSON(r io.Reader, now time.Time) (*Validated, error) {
 		Slug:           "",
 		AdminToken:     "",
 		Target:         input.Target,
-		PasswordHash:   passwordHash,
+		PasswordHash:   nil,
 		MaxHits:        maxHits,
 		ValidFrom:      validFrom,
 		CreatedAt:      now,
@@ -112,21 +100,24 @@ func FromJSON(r io.Reader, now time.Time) (*Validated, error) {
 		return nil, fmt.Errorf("validation failed: %w", err)
 	}
 
+	err = validated.SetPasswordHash(input.Password)
+	if err != nil {
+		return nil, fmt.Errorf("error generating the hash: %w", err)
+	}
+
 	slugLen, err := strconv.Atoi(input.SlugLength)
 	if err != nil {
 		return nil, fmt.Errorf("invalid slugLength: %w", err)
 	}
-	slug, err := generateSlug(slugLen, strings.ToLower(input.SlugCharset))
+	err = validated.SetSlug(slugLen, strings.ToLower(input.SlugCharset))
 	if err != nil {
 		return nil, fmt.Errorf("error generating slug: %w", err)
 	}
-	validated.SetSlug(slug)
 
-	adminToken, err := generateAdminToken(adminTokenLen)
+	err = validated.SetAdminToken()
 	if err != nil {
 		return nil, fmt.Errorf("error generating admin token: %w", err)
 	}
-	validated.SetAdminToken(adminToken)
 
 	return validated, nil
 }
@@ -188,22 +179,22 @@ func PatchFromJSON(data []byte, original *Link) (*ValidatedPatch, error) {
 		}
 	}
 
-	if raw.Password != nil {
-		if *raw.Password == nil {
-			patch.PasswordHash.Remove = true
-		} else {
-			hash, err := hashPassword(**raw.Password)
-			if err != nil {
-				return nil, fmt.Errorf("%w: %v", ErrErrorHashingPassword, err)
-			}
-			patch.PasswordHash.Value = &hash
-		}
-	}
-
 	validated, err := ValidatePatch(original, patch, now)
 	if err != nil {
 		return nil, err
 	}
+
+	if raw.Password != nil {
+		if *raw.Password == nil {
+			patch.PasswordHash.Remove = true
+		} else {
+			err = validated.SetPasswordHash(*raw.Password)
+			if err != nil {
+				return nil, ErrHashingPassword
+			}
+		}
+	}
+
 
 	return validated, nil
 }

@@ -110,11 +110,11 @@ func extractBearerToken(r *http.Request) (string, error) {
 	const prefix = "Bearer "
 	authHeader := r.Header.Get("Authorization")
 	if !strings.HasPrefix(authHeader, prefix) {
-		return "", errors.New("Missing or invalid Authorization header")
+		return "", errors.New("missing or invalid Authorization header")
 	}
 	token := strings.TrimPrefix(authHeader, prefix)
 	if token == "" {
-		return "", errors.New("Missing admin token")
+		return "", errors.New("missing admin token")
 	}
 	return token, nil
 }

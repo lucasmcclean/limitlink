@@ -6,11 +6,31 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// adminTokenLen is the number of characters in a generated admin token.
-const adminTokenLen = 22
+const (
+	// minSlugLen is the minimum length of a generated slug.
+	minSlugLen = 6
 
-// schemaVersion defines the current version of the link schema.
-const schemaVersion = 1
+	// maxSlugLen is the maximum length of a generated slug.
+	maxSlugLen = 12
+
+	// maxMaxHits is the maximum valid amount for max hits.
+	maxMaxHits = 1_000_000
+
+	// adminTokenLen is the number of characters in a generated admin token.
+	adminTokenLen = 22
+
+	// maxPasswordLen is the maximum allowed length of a supplied password.
+	maxPasswordLen = 256
+
+	// minTime is the minimum amount a given time must be from now to be valid.
+	minTime = time.Minute
+
+	// maxTime is the maximum amount of time in the future a provided time can be.
+	maxTime = time.Hour * 24 * 30
+
+	// schemaVersion defines the current version of the link schema.
+	schemaVersion = 1
+)
 
 // Link represents a shortened URL with optional access controls and usage
 // limits.

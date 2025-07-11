@@ -12,7 +12,7 @@ func New(repo link.Repository) *http.Server {
 
 	registerRoutes(mux, repo)
 
-	var handler http.Handler = mux
+	var handler = maxBodySizeMiddleware(mux)
 
 	return &http.Server{
 		Addr:              ":8080",
