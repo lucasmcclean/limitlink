@@ -52,7 +52,7 @@ func (v *Validated) Link() *Link {
 
 // SetSlug generates and applies a validated slug to the underlying link.
 func (v *Validated) SetSlug(length int, charset string) error {
-	if length < minSlugLen || length > maxSlugLen {
+	if length < MinSlugLen || length > MaxSlugLen {
 		return ErrInvalidSlugLen
 	}
 
@@ -150,7 +150,7 @@ func (v *ValidatedPatch) SetPasswordHash(password *string) error {
 	}
 
 	v.patch.PasswordHash = Field[string]{
-		Value: &passwordHash,
+		Value:  &passwordHash,
 		Remove: false,
 	}
 	return nil
@@ -158,7 +158,7 @@ func (v *ValidatedPatch) SetPasswordHash(password *string) error {
 
 // ValidatePatch validates updates from patch against the original Link state,
 // ensuring all fields follow the rules and cross-field dependencies.
-// 
+//
 // Do not assign a Password before validating; use the provided SetPasswordHash
 // instead.
 func ValidatePatch(original *Link, patch *PatchLink, now time.Time) (*ValidatedPatch, error) {

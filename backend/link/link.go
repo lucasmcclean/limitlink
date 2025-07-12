@@ -8,10 +8,10 @@ import (
 
 const (
 	// minSlugLen is the minimum length of a generated slug.
-	minSlugLen = 6
+	MinSlugLen = 6
 
 	// maxSlugLen is the maximum length of a generated slug.
-	maxSlugLen = 12
+	MaxSlugLen = 12
 
 	// maxMaxHits is the maximum valid amount for max hits.
 	maxMaxHits = 1_000_000
@@ -48,4 +48,17 @@ type Link struct {
 	AdminExpiresAt time.Time          `bson:"admin_expires_at" json:"adminExpiresAt"`          // Expiration timestamp for admin access
 	UpdatedAt      time.Time          `bson:"updated_at" json:"updatedAt"`                     // Last updated timestamp
 	SchemaVersion  int                `bson:"schema_version" json:"-"`                         // Schema version for migration
+}
+
+func (l *Link) IsAvailable(now time.Time) bool {
+	if l.MaxHits != nil && l.HitCount >= *l.MaxHits {
+		return false
+	}
+	if l.ValidFrom != nil && now.Before(*l.ValidFrom) {
+		return false
+	}
+	if now.After(l.ExpiresAt) {
+		return false
+	}
+	return true
 }

@@ -195,6 +195,5 @@ func PatchFromJSON(data []byte, original *Link) (*ValidatedPatch, error) {
 		}
 	}
 
-
 	return validated, nil
 }

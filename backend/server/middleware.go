@@ -14,7 +14,7 @@ func maxBodySizeMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-    r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
+		r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
 
 		next.ServeHTTP(w, r)
 	})

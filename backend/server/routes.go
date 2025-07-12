@@ -7,5 +7,6 @@ import (
 )
 
 func registerRoutes(mux *http.ServeMux, repo link.Repository) {
-	mux.Handle("/link/", LinkHandler(repo))
+	mux.Handle("/links", LinkHandler(repo))
+	mux.Handle("/", RedirectHandler(repo))
 }

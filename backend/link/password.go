@@ -15,11 +15,16 @@ func hashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-// VerifyPassword checks whether the given password matches the hashed password.
-// Returns true if the password is correct, false otherwise.
+// IsCorrectPassword checks whether the given password matches the hashed password
+// on the link.
+// Returns true if the password is correct or if there is no password and false
+// otherwise.
 // Returns an error only if there was an unexpected problem verifying the hash.
-func VerifyPassword(hash string, password string) (bool, error) {
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+func (l *Link) IsCorrectPassword(password string) (bool, error) {
+	if l.PasswordHash == nil {
+		return true, nil
+	}
+	err := bcrypt.CompareHashAndPassword([]byte(*l.PasswordHash), []byte(password))
 	switch err {
 	case bcrypt.ErrMismatchedHashAndPassword:
 		return false, nil

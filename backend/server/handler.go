@@ -12,6 +12,67 @@ import (
 	"github.com/lucasmcclean/limitlink/link"
 )
 
+// RedirectHandler redirects GET requests to their matching target.
+// It will first verify that the link is available and fail if it can't
+// increment the hit count.
+func RedirectHandler(links link.Repository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
+		path := strings.Trim(r.URL.Path, "/")
+		slug := strings.Split(path, "/")[0]
+
+		if slug == "" {
+			http.Error(w, "Missing slug", http.StatusBadRequest)
+			return
+		}
+
+		if len(slug) < link.MinSlugLen || len(slug) > link.MaxSlugLen {
+			http.Error(w, "Invalid slug length", http.StatusBadRequest)
+			return
+		}
+
+		lnk, err := links.GetBySlug(r.Context(), slug)
+		if err != nil {
+			http.Error(w, "Link not found", http.StatusNotFound)
+			return
+		}
+
+		if !lnk.IsAvailable(time.Now()) {
+			http.Error(w, "Link not found", http.StatusNotFound)
+			return
+		}
+
+		if lnk.PasswordHash != nil {
+			password := r.Header.Get("X-Link-Password")
+			if password == "" {
+				http.Error(w, "Password required", http.StatusUnauthorized)
+				return
+			}
+			valid, err := lnk.IsCorrectPassword(password)
+			if err != nil {
+				http.Error(w, "Error validating password", http.StatusInternalServerError)
+				return
+			}
+			if !valid {
+				http.Error(w, "Invalid password", http.StatusUnauthorized)
+				return
+			}
+		}
+
+		err = links.IncBySlug(r.Context(), slug)
+		if err != nil {
+			http.Error(w, "Error retrieving link", http.StatusInternalServerError)
+			return
+		}
+
+		http.Redirect(w, r, lnk.Target, http.StatusFound)
+	}
+}
+
 // LinkHandler routes POST, PATCH, and GET requests to the appropriate handlers.
 func LinkHandler(links link.Repository) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +107,28 @@ func postLink(w http.ResponseWriter, r *http.Request, links link.Repository) {
 		return
 	}
 
+	lnk := validated.Link()
+
+	resp := struct {
+		Slug        string `json:"slug"`
+		AdminToken  string `json:"admin_token"`
+		RedirectURL string `json:"redirect_url"`
+		AdminURL    string `json:"admin_url"`
+	}{
+		Slug:        lnk.Slug,
+		AdminToken:  lnk.AdminToken,
+		RedirectURL: "https://limitl.ink/" + lnk.Slug,
+		AdminURL:    "https://limitl.ink/admin/" + lnk.AdminToken,
+	}
+
+	w.Header().Set("Location", "/admin/"+lnk.AdminToken)
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+
+	if err := json.NewEncoder(w).Encode(resp); err != nil {
+		log.Printf("error encoding created link: %v", err)
+		http.Error(w, "Error encoding created link", http.StatusInternalServerError)
+	}
 }
 
 // patchLink handles PATCH requests for updating a link.
