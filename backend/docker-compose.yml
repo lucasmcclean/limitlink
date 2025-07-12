@@ -27,7 +27,7 @@ services:
         max-file: "3"
 
   mongo:
-    image: mongo:7.0
+    image: mongo:8.0
     container_name: mongo
     restart: unless-stopped
     environment:
