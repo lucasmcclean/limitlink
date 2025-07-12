@@ -36,7 +36,7 @@ func RedirectHandler(links link.Repository) http.HandlerFunc {
 		}
 
 		lnk, err := links.GetBySlug(r.Context(), slug)
-		if err != nil {
+		if err != nil || lnk == nil {
 			http.Error(w, "Link not found", http.StatusNotFound)
 			return
 		}
