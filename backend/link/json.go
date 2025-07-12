@@ -8,9 +8,11 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var ErrMissingRequiredFields = errors.New("missing one or more required fields: target, slug-length, slug-charset")
+var ErrMissingRequiredFields = errors.New("missing one or more required fields: target, slugLength, slugCharset")
 
 // rawJSONInput represents the expected structure of JSON input for creating a new link.
 type rawJSONInput struct {
@@ -81,6 +83,7 @@ func FromJSON(r io.Reader, now time.Time) (*Validated, error) {
 	adminExpiresAt := expiresAt.Add(24 * time.Hour)
 
 	link := &Link{
+		ID: primitive.NewObjectID(),
 		Slug:           "",
 		AdminToken:     "",
 		Target:         input.Target,
