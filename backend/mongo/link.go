@@ -34,7 +34,7 @@ func (store *Store) Links(ctx context.Context) (*Links, error) {
 // automatically delete documents after the specified expiration time.
 func (l *Links) EnsureTTLIndex(ctx context.Context) error {
 	index := mongo.IndexModel{
-		Keys: bson.D{{Key: "admin_expires_at", Value: 1}},
+		Keys: bson.M{"admin_expires_at": 1},
 		Options: options.Index().
 			SetExpireAfterSeconds(0).
 			SetName("adminExpiresAtTTL"),
@@ -56,6 +56,7 @@ func (l *Links) Create(ctx context.Context, vLink *link.Validated) error {
 }
 
 // GetBySlug retrieves a link document by its slug.
+// Returns a nil Link if one is not found.
 func (l *Links) GetBySlug(ctx context.Context, slug string) (*link.Link, error) {
 	var result link.Link
 	err := l.collection.FindOne(ctx, bson.M{"slug": slug}).Decode(&result)
