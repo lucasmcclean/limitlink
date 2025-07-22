@@ -5,12 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
-
-var ErrMissingEnvVar = errors.New("missing either MONGO_URI, MONGO_NAME, or both environment variables")
 
 // Store holds the MongoDB client and database reference.
 type Store struct {
@@ -25,8 +24,15 @@ func New(ctx context.Context) (*Store, error) {
 	uri, uriPresent := os.LookupEnv("MONGO_URI")
 	dbName, dbNamePresent := os.LookupEnv("MONGO_NAME")
 
-	if !uriPresent || !dbNamePresent {
-		return nil, ErrMissingEnvVar
+	missing := make([]string, 0, 2)
+	if !uriPresent {
+		missing = append(missing, "MONGO_URI")
+	}
+	if !dbNamePresent {
+		missing = append(missing, "MONGO_NAME")
+	}
+	if len(missing) != 0 {
+		return nil, errors.New("missing one or more environment variable: " + strings.Join(missing, ", "))
 	}
 
 	client, err := mongo.Connect(options.Client().ApplyURI(uri))

@@ -12,15 +12,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-var ErrMissingRequiredFields = errors.New("missing one or more required fields: target, slugLength, slugCharset")
-
 // rawJSONInput represents the expected structure of JSON input for creating a new link.
 type rawJSONInput struct {
 	Target      string  `json:"target"`              // Required: destination URL
 	SlugLength  string  `json:"slugLength"`          // Required: length of the generated slug
 	SlugCharset string  `json:"slugCharset"`         // Required: allowed characters in the slug
-	ExpiresAt   *string `json:"expiresAt,omitempty"` // Optional: RFC3339 absolute expiration
-	ExpiresIn   *string `json:"expiresIn,omitempty"` // Optional: relative expiration in days
+	ExpiresAt   string  `json:"expiresAt,omitempty"` // Required: RFC3339 absolute expiration
 	Password    *string `json:"password,omitempty"`  // Optional: password to protect the link
 	MaxHits     *string `json:"maxHits,omitempty"`   // Optional: max allowed hits (int)
 	ValidFrom   *string `json:"validFrom,omitempty"` // Optional: RFC3339 start time for link validity
@@ -40,26 +37,26 @@ func FromJSON(r io.Reader, now time.Time) (*Validated, error) {
 		return nil, fmt.Errorf("invalid JSON: %w", err)
 	}
 
-	if input.Target == "" || input.SlugLength == "" || input.SlugCharset == "" {
-		return nil, ErrMissingRequiredFields
+	missing := make([]string, 0, 4)
+	if input.Target == "" {
+		missing = append(missing, "target")
+	}
+	if input.SlugLength == "" {
+		missing = append(missing, "slugLength")
+	}
+	if input.SlugCharset == "" {
+		missing = append(missing, "slugCharset")
+	}
+	if input.ExpiresAt == "" {
+		missing = append(missing, "expiresAt")
+	}
+	if len(missing) != 0 {
+		return nil, errors.New("missing one or more required fields: " + strings.Join(missing, ", "))
 	}
 
-	var expiresAt time.Time
-	var err error
-	switch {
-	case input.ExpiresAt != nil && *input.ExpiresAt != "":
-		expiresAt, err = time.Parse(time.RFC3339, *input.ExpiresAt)
-		if err != nil {
-			return nil, fmt.Errorf("invalid expiresAt: %w", err)
-		}
-	case input.ExpiresIn != nil && *input.ExpiresIn != "":
-		days, err := strconv.Atoi(*input.ExpiresIn)
-		if err != nil {
-			return nil, fmt.Errorf("invalid expiresIn: %w", err)
-		}
-		expiresAt = now.Add(time.Duration(days) * 24 * time.Hour)
-	default:
-		return nil, errors.New("either expiresAt or expiresIn must be provided")
+	expiresAt, err := time.Parse(time.RFC3339, input.ExpiresAt)
+	if err != nil {
+		return nil, fmt.Errorf("invalid expiresAt: %w", err)
 	}
 
 	var validFrom *time.Time
@@ -83,7 +80,7 @@ func FromJSON(r io.Reader, now time.Time) (*Validated, error) {
 	adminExpiresAt := expiresAt.Add(24 * time.Hour)
 
 	link := &Link{
-		ID: primitive.NewObjectID(),
+		ID:             primitive.NewObjectID(),
 		Slug:           "",
 		AdminToken:     "",
 		Target:         input.Target,
