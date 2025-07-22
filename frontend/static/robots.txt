@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /links
+Allow: /
+
+Sitemap: https://limitl.ink/sitemap.xml
