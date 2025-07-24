@@ -31,6 +31,28 @@
 	--color-txt: #f8f8f8;
 }
 
+@font-face {
+	font-family: 'Exo 2';
+	src:
+		url('/fonts/exo2/exo2-var.woff2') format('woff2'),
+		url('/fonts/exo2/exo2-var.woff') format('woff'),
+		url('/fonts/exo2/exo2-var.ttf') format('ttf');
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Exo 2';
+	src:
+		url('/fonts/exo2/exo2-italic-var.woff2') format('woff2'),
+		url('/fonts/exo2/exo2-italic-var.woff') format('woff'),
+		url('/fonts/exo2/exo2-italic-var.ttf') format('ttf');
+	font-weight: 100 900;
+	font-style: italic;
+	font-display: swap;
+}
+
 ::selection {
 	background-color: var(--color-secondary);
 }
