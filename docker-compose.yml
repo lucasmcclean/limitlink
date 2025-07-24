@@ -4,6 +4,9 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      ENV: ${ENV}
     read_only: true
     networks:
       - limitlink-app
@@ -11,8 +14,6 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
-    ports:
-      - "8080:8080"
     depends_on:
       - mongo
     environment:
@@ -43,6 +44,7 @@ services:
       retries: 5
 
 volumes:
+  certs:
   mongo-data:
 
 networks:
