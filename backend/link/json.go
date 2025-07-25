@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"strconv"
 	"strings"
 	"time"
 
@@ -15,11 +14,11 @@ import (
 // rawJSONInput represents the expected structure of JSON input for creating a new link.
 type rawJSONInput struct {
 	Target      string  `json:"target"`              // Required: destination URL
-	SlugLength  string  `json:"slugLength"`          // Required: length of the generated slug
+	SlugLength  int     `json:"slugLength"`          // Required: length of the generated slug
 	SlugCharset string  `json:"slugCharset"`         // Required: allowed characters in the slug
 	ExpiresAt   string  `json:"expiresAt,omitempty"` // Required: RFC3339 absolute expiration
 	Password    *string `json:"password,omitempty"`  // Optional: password to protect the link
-	MaxHits     *string `json:"maxHits,omitempty"`   // Optional: max allowed hits (int)
+	MaxHits     *int    `json:"maxHits,omitempty"`   // Optional: max allowed hits
 	ValidFrom   *string `json:"validFrom,omitempty"` // Optional: RFC3339 start time for link validity
 }
 
@@ -40,9 +39,6 @@ func FromJSON(r io.Reader, now time.Time) (*Validated, error) {
 	missing := make([]string, 0, 4)
 	if input.Target == "" {
 		missing = append(missing, "target")
-	}
-	if input.SlugLength == "" {
-		missing = append(missing, "slugLength")
 	}
 	if input.SlugCharset == "" {
 		missing = append(missing, "slugCharset")
@@ -68,14 +64,7 @@ func FromJSON(r io.Reader, now time.Time) (*Validated, error) {
 		validFrom = &vf
 	}
 
-	var maxHits *int
-	if input.MaxHits != nil && *input.MaxHits != "" {
-		mh, err := strconv.Atoi(*input.MaxHits)
-		if err != nil {
-			return nil, fmt.Errorf("invalid maxHits: %w", err)
-		}
-		maxHits = &mh
-	}
+	maxHits := input.MaxHits
 
 	adminExpiresAt := expiresAt.Add(24 * time.Hour)
 
@@ -105,10 +94,7 @@ func FromJSON(r io.Reader, now time.Time) (*Validated, error) {
 		return nil, fmt.Errorf("error generating the hash: %w", err)
 	}
 
-	slugLen, err := strconv.Atoi(input.SlugLength)
-	if err != nil {
-		return nil, fmt.Errorf("invalid slugLength: %w", err)
-	}
+	slugLen := input.SlugLength
 	err = validated.SetSlug(slugLen, strings.ToLower(input.SlugCharset))
 	if err != nil {
 		return nil, fmt.Errorf("error generating slug: %w", err)
