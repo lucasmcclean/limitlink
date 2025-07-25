@@ -1,24 +1,25 @@
 <script lang="ts">
 	import Logo from '$lib/components/Logo.svelte';
 
-	let { target, expiration, maxHits, validFrom, password, slugLength, slugCharset, errors } =
-		$state({
+	let { target, expiresIn, maxHits, validFrom, password, slugLength, slugCharset, errors } = $state(
+		{
 			target: '',
-			expiration: 7,
+			expiresIn: 7,
 			maxHits: '',
 			validFrom: '',
 			password: '',
 			slugLength: '7',
 			slugCharset: 'alphanumeric',
 			errors: {} as Record<string, string>
-		});
+		}
+	);
 
 	$effect(() => {
 		errors.target = !/^https?:\/\//.test(target.trim())
 			? 'Must be a valid URL starting with http:// or https://'
 			: '';
 
-		errors.expiration = expiration < 1 || expiration > 30 ? 'Must be between 1 and 30' : '';
+		errors.expiresIn = expiresIn < 1 || expiresIn > 30 ? 'Must be between 1 and 30' : '';
 
 		errors.slugLength =
 			slugLength !== '' && (+slugLength < 6 || +slugLength > 12) ? 'Must be between 6 and 12' : '';
@@ -42,14 +43,18 @@
 		isInvalid = Object.values(errors).some(Boolean);
 	});
 
-	function handleSubmit(event: SubmitEvent) {
+	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
 
 		if (Object.values(errors).some(Boolean)) return;
 
+		const now = new Date();
+		const expiresAt = new Date(now);
+		expiresAt.setUTCDate(now.getUTCDate() + Number(expiresIn));
+
 		const payload = {
 			target: target.trim(),
-			expiresAt: expiration,
+			expiresAt: expiresAt.toISOString(),
 			maxHits: maxHits !== '' ? +maxHits : null,
 			validFrom: validFrom || null,
 			password: password || null,
@@ -57,7 +62,25 @@
 			slugCharset
 		};
 
-		console.log('Payload:', payload);
+		try {
+			const res = await fetch('/api/create', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(payload)
+			});
+
+			if (!res.ok) {
+				const error = await res.text();
+				console.error('Submission error:', error);
+			} else {
+				const data = await res.json();
+				console.log('Success:', data);
+			}
+		} catch (err) {
+			console.error('Request failed:', err);
+		}
 	}
 </script>
 
@@ -150,7 +173,7 @@
 				<div>
 					<label for="expires-in"
 						>Expires In: <span id="expires-in-days"
-							>{expiration} {expiration === 1 ? 'day' : 'days'}</span
+							>{expiresIn} {expiresIn === 1 ? 'day' : 'days'}</span
 						></label
 					>
 					<input
@@ -162,15 +185,15 @@
 						max="30"
 						aria-valuemin="0"
 						aria-valuemax="30"
-						aria-valuenow={expiration}
-						bind:value={expiration}
+						aria-valuenow={expiresIn}
+						bind:value={expiresIn}
 						aria-label="Volume"
 						aria-labelledby="expires-in-days"
-						aria-invalid={errors.expiration ? 'true' : 'false'}
-						aria-describedby={errors.expiration ? 'expires-error' : undefined}
+						aria-invalid={errors.expiresIn ? 'true' : 'false'}
+						aria-describedby={errors.expiresIn ? 'expires-in-error' : undefined}
 					/>
-					{#if errors.expiration}
-						<p id="expires-error" class="error" aria-live="polite">{errors.expiration}</p>
+					{#if errors.expiresIn}
+						<p id="expires-in-error" class="error" aria-live="polite">{errors.expiresIn}</p>
 					{/if}
 				</div>
 
