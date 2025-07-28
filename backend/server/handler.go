@@ -111,9 +111,9 @@ func postLink(w http.ResponseWriter, r *http.Request, links link.Repository) {
 
 	resp := struct {
 		Slug        string `json:"slug"`
-		AdminToken  string `json:"admin_token"`
-		RedirectURL string `json:"redirect_url"`
-		AdminURL    string `json:"admin_url"`
+		AdminToken  string `json:"adminToken"`
+		RedirectURL string `json:"redirectUrl"`
+		AdminURL    string `json:"adminUrl"`
 	}{
 		Slug:        lnk.Slug,
 		AdminToken:  lnk.AdminToken,
