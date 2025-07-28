@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import Logo from '$lib/components/Logo.svelte';
+	import { redirect } from '@sveltejs/kit';
 
 	let { target, expiresIn, maxHits, validFrom, password, slugLength, slugCharset, errors } = $state(
 		{
@@ -77,6 +79,7 @@
 			} else {
 				const data = await res.json();
 				console.log('Success:', data);
+				goto(`/admin/${data.adminToken}`);
 			}
 		} catch (err) {
 			console.error('Request failed:', err);
