@@ -1,11 +1,6 @@
 import type { RequestHandler } from '@sveltejs/kit';
 
-export const GET: RequestHandler = forwardToBackend;
-export const POST: RequestHandler = forwardToBackend;
-export const PUT: RequestHandler = forwardToBackend;
-export const DELETE: RequestHandler = forwardToBackend;
-
-async function forwardToBackend({ params, url, request }: any) {
+export const GET: RequestHandler = async ({ params, url, request }: any) => {
 	const slug = params.slug;
 	const backendBase = 'http://backend:8080';
 	const backendUrl = `${backendBase}/${slug}`;
@@ -30,4 +25,4 @@ async function forwardToBackend({ params, url, request }: any) {
 			'content-type': contentType
 		}
 	});
-}
+};

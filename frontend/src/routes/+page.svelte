@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Logo from '$lib/components/Logo.svelte';
-	import { redirect } from '@sveltejs/kit';
 
 	let { target, expiresIn, maxHits, validFrom, password, slugLength, slugCharset, errors } = $state(
 		{
@@ -65,7 +64,7 @@
 		};
 
 		try {
-			const res = await fetch('/api/create', {
+			const res = await fetch('/links', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'

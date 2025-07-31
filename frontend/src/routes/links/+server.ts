@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const responseData = await backendResponse.json();
 		return json(responseData);
 	} catch (err: any) {
-		console.error('Error handling /api/create POST:', err);
+		console.error('Error handling /links POST:', err);
 		throw error(500, 'Internal server error');
 	}
 };

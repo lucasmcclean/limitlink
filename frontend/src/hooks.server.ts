@@ -1,11 +1,9 @@
 import type { Handle } from '@sveltejs/kit';
-import { sequence } from '@sveltejs/kit/hooks';
 import { RetryAfterRateLimiter } from 'sveltekit-rate-limiter/server';
 import { env } from '$env/dynamic/private';
+import { sequence } from '@sveltejs/kit/hooks';
 
 const isDev = env.ENV === 'dev';
-
-console.log(isDev);
 
 const httpsRedirect: Handle = async ({ event, resolve }) => {
 	const proto = event.request.headers.get('x-forwarded-proto');
@@ -62,26 +60,4 @@ const rateLimitMiddleware: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-const securityAndCaching: Handle = async ({ event, resolve }) => {
-	const nonce = crypto.randomUUID();
-	event.locals.nonce = nonce;
-
-	const response = await resolve(event, {
-		transformPageChunk: ({ html }) => html.replace(/<script/g, `<script nonce="${nonce}"`)
-	});
-
-	response.headers.set('strict-transport-security', 'max-age=63072000; includeSubDomains; preload');
-	response.headers.set('x-frame-options', 'DENY');
-	response.headers.set('x-content-type-options', 'nosniff');
-	response.headers.set('referrer-policy', 'strict-origin-when-cross-origin');
-	response.headers.set('permissions-policy', 'geolocation=(), microphone=(), camera=()');
-	response.headers.set('expect-ct', 'max-age=86400, enforce');
-	response.headers.set(
-		'content-security-policy',
-		`default-src 'self'; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'nonce-${nonce}'; img-src 'self' data:;`
-	);
-
-	return response;
-};
-
-export const handle: Handle = sequence(httpsRedirect, rateLimitMiddleware, securityAndCaching);
+export const handle: Handle = sequence(httpsRedirect, rateLimitMiddleware);
