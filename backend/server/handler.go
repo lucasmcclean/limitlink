@@ -134,7 +134,7 @@ func postLink(w http.ResponseWriter, r *http.Request, links link.Repository) {
 // patchLink handles PATCH requests for updating a link.
 // It expects a JSON body with optional fields to modify, and a Bearer token for authentication.
 func patchLink(w http.ResponseWriter, r *http.Request, links link.Repository) {
-	adminToken, err := extractBearerToken(r)
+	adminToken, err := extractAdminToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -169,34 +169,32 @@ func patchLink(w http.ResponseWriter, r *http.Request, links link.Repository) {
 // getLink returns the current state of a link.
 // It expects a Bearer token to authorize the request.
 func getLink(w http.ResponseWriter, r *http.Request, links link.Repository) {
-	adminToken, err := extractBearerToken(r)
+	adminToken, err := extractAdminToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
 	link, err := links.GetByToken(r.Context(), adminToken)
-	if err != nil {
+	if err != nil || link == nil {
 		http.Error(w, "Link not found or invalid admin token", http.StatusNotFound)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(link); err != nil {
+	if err := json.NewEncoder(w).Encode(link.ToPublic()); err != nil {
 		http.Error(w, "Error serializing link", http.StatusInternalServerError)
 	}
 }
 
-// extractBearerToken parses the Authorization header and extracts the Bearer token.
-func extractBearerToken(r *http.Request) (string, error) {
-	const prefix = "Bearer "
-	authHeader := r.Header.Get("Authorization")
-	if !strings.HasPrefix(authHeader, prefix) {
-		return "", errors.New("missing or invalid Authorization header")
-	}
-	token := strings.TrimPrefix(authHeader, prefix)
+// extractBearerToken parses the URL and extracts the admin token.
+// Expects the request to be of the form /links/admin-token.
+func extractAdminToken(r *http.Request) (string, error) {
+	path := strings.TrimPrefix(r.URL.Path, "/links/")
+	token := strings.Trim(path, "/")
+
 	if token == "" {
-		return "", errors.New("missing admin token")
+		return "", errors.New("missing admin token in URL path")
 	}
 	return token, nil
 }
