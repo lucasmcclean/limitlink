@@ -1,8 +1,0 @@
-root = "."
-tmp_dir = "tmp"
-
-[build]
-  cmd = "go build -o ./tmp/limitlink ."
-  bin = "./tmp/limitlink"
-  include_ext = ["go", "html", "css", "js"]
-  exclude_dir = ["tmp"]

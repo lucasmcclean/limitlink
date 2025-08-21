@@ -1,30 +1,52 @@
 services:
-  app:
-    build: .
-    container_name: limitlink
+  frontend:
+    build: ./frontend
     restart: unless-stopped
+    ports:
+      - "3000:3000"
     environment:
-      - MONGO_URI=${MONGO_URI}
-      - MONGO_DB_NAME=${MONGO_DB_NAME}
-      - MONGO_COLLECTION=${MONGO_COLLECTION}
+      COOKIE_SECRET: ${COOKIE_SECRET}
+      ENV: ${ENV}
+    read_only: true
+    networks:
+      - limitlink-app
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
     depends_on:
-      mongo:
-        condition: service_healthy
+      - mongo
+    environment:
+      MONGO_URI: ${MONGO_URI}
+      MONGO_NAME: ${MONGO_NAME}
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      - limitlink-app
+      - limitlink-data
 
   mongo:
     image: mongo:8.0
-    container_name: limitlink-mongo
     restart: unless-stopped
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     volumes:
-      - mongo_data:/data/db
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    networks:
+      - limitlink-data
     healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/limitlink-mongo --quiet
-      interval: 5s
-      timeout: 10s
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  mongo_data:
+  certs:
+  mongo-data:
+
+networks:
+  limitlink-app:
+  limitlink-data:

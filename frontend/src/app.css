@@ -1,0 +1,97 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+@theme {
+	--breakpoint-xs: 30rem; /* 480px */
+
+	--default-transition-duration: 0.2s;
+
+	--font-display: 'Exo 2', 'sans-serif';
+	--font-text: 'Roboto', 'sans-serif';
+
+	--color-bg: #f8f8f8;
+	--color-txt: #141414;
+	--color-surface: #282828;
+	--color-primary: #a01a7d;
+	--color-secondary: #ec4067;
+	--color-error: #f52447;
+}
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-bg: #141414;
+		--color-txt: #f8f8f8;
+	}
+}
+
+[data-theme='dark'] {
+	--color-bg: #141414;
+	--color-txt: #f8f8f8;
+}
+
+@font-face {
+	font-family: 'Exo 2';
+	src:
+		url('/fonts/exo2/exo2-var.woff2') format('woff2'),
+		url('/fonts/exo2/exo2-var.woff') format('woff'),
+		url('/fonts/exo2/exo2-var.ttf') format('ttf');
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Exo 2';
+	src:
+		url('/fonts/exo2/exo2-italic-var.woff2') format('woff2'),
+		url('/fonts/exo2/exo2-italic-var.woff') format('woff'),
+		url('/fonts/exo2/exo2-italic-var.ttf') format('ttf');
+	font-weight: 100 900;
+	font-style: italic;
+	font-display: swap;
+}
+
+::selection {
+	background-color: var(--color-secondary);
+}
+
+[data-theme='dark'] ::selection {
+	background-color: var(--color-primary);
+}
+
+html {
+	color: var(--color-txt);
+	background-color: var(--color-bg);
+}
+
+h1,
+h2 {
+	font-family: var(--font-display);
+}
+body {
+	font-family: var(--font-text);
+}
+
+a {
+	color: var(--color-primary);
+}
+
+a:hover {
+	color: var(--color-secondary);
+}
+
+[data-theme='dark'] a {
+	color: var(--color-secondary);
+}
+
+[data-theme='dark'] a:hover {
+	color: var(--color-primary);
+}
+
+:focus-visible {
+	outline: 2px solid var(--color-secondary);
+	outline-offset: 3px;
+	border-radius: 3px;
+}
